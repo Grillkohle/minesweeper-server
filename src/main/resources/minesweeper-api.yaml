@@ -49,6 +49,9 @@ components:
       properties:
         board:
           $ref: '#/components/schemas/board'
+        id:
+          type: uuid
+          description: The unique identifier of the game
       required: 
         - board
 
