@@ -22,12 +22,6 @@ paths:
             type: integer
           description: The size of the game board in the horizontal dimension. Must be a non-zero positive integer.
           required: true
-        - in: query
-          name: mines
-          schema:
-            type: integer
-          description: The number of mines that are placed on the board.  Must be a non-zero positive integer.
-          required: true
       responses:
         "201":
           description: The game has been created.

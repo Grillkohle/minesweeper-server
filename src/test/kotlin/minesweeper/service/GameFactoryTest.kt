@@ -12,7 +12,7 @@ class GameFactoryTest {
         val sizeHorizontal = 10
         val sizeVertical = 5
 
-        val gameEntity = gameFactory.createGame(sizeHorizontal, sizeVertical, 10)
+        val gameEntity = gameFactory.createGame(sizeHorizontal, sizeVertical)
 
         assertNotNull(gameEntity.id)
         assertEquals(Pair(sizeHorizontal, sizeVertical), Pair(gameEntity.board.sizeHorizontal, gameEntity.board.sizeVertical))

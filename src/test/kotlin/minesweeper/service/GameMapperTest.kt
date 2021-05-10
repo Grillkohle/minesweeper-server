@@ -19,7 +19,6 @@ class GameMapperTest {
 
         assertEquals(gameEntity.board.sizeHorizontal, boardResponse.sizeHorizontal)
         assertEquals(gameEntity.board.sizeVertical, boardResponse.sizeVertical)
-        assertEquals(gameEntity.board.mines, boardResponse.mines)
 
         for (column in boardResponse.board.indices) {
             for (row in boardResponse.board[column].indices) {

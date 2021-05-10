@@ -25,13 +25,12 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc) {
     fun `create game expect created 201`() {
         val expectedResponse = GameGenerator.generateGameResponse()
 
-        `when`(gameService.createGame(anyInt(), anyInt(), anyInt())).thenReturn(expectedResponse)
+        `when`(gameService.createGame(anyInt(), anyInt())).thenReturn(expectedResponse)
 
         mockMvc.perform(
                 request(HttpMethod.POST, "/games")
                         .queryParam("size_horizontal", "10")
                         .queryParam("size_vertical", "10")
-                        .queryParam("mines", "10")
         )
                 .andExpect(MockMvcResultMatchers.status().isCreated)
                 .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
@@ -52,7 +51,6 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc) {
                 request(HttpMethod.POST, "/games")
                         .queryParam("size_horizontal", "-1")
                         .queryParam("size_vertical", "-1")
-                        .queryParam("mines", "-1")
         )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest)
     }
