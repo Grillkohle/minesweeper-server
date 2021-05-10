@@ -7,19 +7,20 @@ import org.springframework.stereotype.Service
 
 @Service
 class GameFactory {
-    fun createGame(sizeHorizontal: Int,
-                   sizeVertical: Int): GameEntity {
-        val boardEntity = BoardEntity(sizeHorizontal = sizeHorizontal,
-                sizeVertical = sizeVertical,
-                board = List(sizeHorizontal) { horizontalIndex -> createColumn(horizontalIndex, sizeVertical) })
+    fun createGame(horizontalSize: Int,
+                   verticalSize: Int): GameEntity {
+        val boardEntity = BoardEntity(
+                horizontalSize = horizontalSize,
+                verticalSize = verticalSize,
+                board = List(horizontalSize) { horizontalIndex -> createColumn(horizontalIndex, verticalSize) })
 
         return GameEntity(board = boardEntity)
     }
 
-    private fun createColumn(horizontalIndex: Int, sizeVertical: Int): List<CellEntity> {
-        return List(sizeVertical) { verticalIndex ->
-            CellEntity(indexHorizontal = horizontalIndex,
-                    indexVertical = verticalIndex)
+    private fun createColumn(horizontalIndex: Int, verticalSize: Int): List<CellEntity> {
+        return List(verticalSize) { verticalIndex ->
+            CellEntity(horizontalIndex = horizontalIndex,
+                    verticalIndex = verticalIndex)
         }
     }
 }

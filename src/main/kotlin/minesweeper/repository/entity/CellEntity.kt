@@ -1,4 +1,4 @@
 package minesweeper.repository.entity
 
-data class CellEntity(val indexHorizontal: Int,
-                      val indexVertical: Int)
+data class CellEntity(val horizontalIndex: Int,
+                      val verticalIndex: Int)

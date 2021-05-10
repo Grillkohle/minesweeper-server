@@ -11,16 +11,16 @@ paths:
       description: Creates a new minesweeper game
       parameters:
         - in: query
-          name: size_horizontal
+          name: horizontal_size
           schema:
             type: integer
           description: The size of the game board in the horizontal dimension. Must be a non-zero positive integer.
           required: true
         - in: query
-          name: size_vertical
+          name: vertical_size
           schema:
             type: integer
-          description: The size of the game board in the horizontal dimension. Must be a non-zero positive integer.
+          description: The size of the game board in the vertical dimension. Must be a non-zero positive integer.
           required: true
       responses:
         "201":
@@ -66,10 +66,10 @@ components:
     cell:
       type: object
       properties:
-        index_horizontal:
+        horizontal_index:
           type: integer
-        index_vertical:
+        vertical_index:
           type: integer
       required:
-        - index_horizontal
-        - index_vertical
+        - horizontal_index
+        - vertical_index

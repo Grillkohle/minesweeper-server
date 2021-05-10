@@ -1,5 +1,5 @@
 package minesweeper.controller.model
 
-data class CellResponse(val indexHorizontal: Int,
-                        val indexVertical: Int
+data class CellResponse(val horizontalIndex: Int,
+                        val verticalIndex: Int
 )

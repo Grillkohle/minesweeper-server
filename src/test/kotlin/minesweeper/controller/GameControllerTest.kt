@@ -29,8 +29,8 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc) {
 
         mockMvc.perform(
                 request(HttpMethod.POST, "/games")
-                        .queryParam("size_horizontal", "10")
-                        .queryParam("size_vertical", "10")
+                        .queryParam("horizontal_size", "10")
+                        .queryParam("vertical_size", "10")
         )
                 .andExpect(MockMvcResultMatchers.status().isCreated)
                 .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
@@ -49,8 +49,8 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc) {
     fun `create game invalid query parameters expect 400`() {
         mockMvc.perform(
                 request(HttpMethod.POST, "/games")
-                        .queryParam("size_horizontal", "-1")
-                        .queryParam("size_vertical", "-1")
+                        .queryParam("horizontal_size", "-1")
+                        .queryParam("vertical_size", "-1")
         )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest)
     }

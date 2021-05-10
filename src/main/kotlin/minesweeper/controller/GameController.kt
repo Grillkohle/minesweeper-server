@@ -15,15 +15,15 @@ class GameController(
 ) {
     @PostMapping("/games")
     fun createGame(
-            @RequestParam("size_horizontal") sizeHorizontal: Int,
-            @RequestParam("size_vertical") sizeVertical: Int,
+            @RequestParam("horizontal_size") horizontalSize: Int,
+            @RequestParam("vertical_size") verticalSize: Int,
             builder: UriComponentsBuilder
     ): ResponseEntity<*> {
-        validateInput(sizeHorizontal, sizeVertical)?.let { return it }
+        validateInput(horizontalSize, verticalSize)?.let { return it }
 
         val gameResponse = gameService.createGame(
-                sizeHorizontal,
-                sizeVertical)
+                horizontalSize,
+                verticalSize)
 
         return ResponseEntity
                 .created(builder.path("games/${gameResponse.id}")
@@ -32,15 +32,15 @@ class GameController(
                 .body(gameResponse)
     }
 
-    private fun validateInput(sizeHorizontal: Int,
-                              sizeVertical: Int): ResponseEntity<Problem>? {
+    private fun validateInput(horizontalSize: Int,
+                              verticalSize: Int): ResponseEntity<Problem>? {
         val errorMessages = mutableListOf<String>()
 
-        if (sizeHorizontal <= 0)
-            errorMessages += "size_horizontal must be greater than 0"
+        if (horizontalSize <= 0)
+            errorMessages += "horizontal_size must be greater than 0"
 
-        if (sizeVertical <= 0)
-            errorMessages += "size_horizontal must be greater than 0"
+        if (verticalSize <= 0)
+            errorMessages += "vertical_size must be greater than 0"
 
         return if (errorMessages.isEmpty()) null else buildProblem(errorMessages)
     }
