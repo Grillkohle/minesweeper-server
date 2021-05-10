@@ -17,15 +17,13 @@ class GameController(
     fun createGame(
             @RequestParam("size_horizontal") sizeHorizontal: Int,
             @RequestParam("size_vertical") sizeVertical: Int,
-            @RequestParam("mines") mines: Int,
             builder: UriComponentsBuilder
     ): ResponseEntity<*> {
-        validateInput(sizeHorizontal, sizeVertical, mines)?.let { return it }
+        validateInput(sizeHorizontal, sizeVertical)?.let { return it }
 
         val gameResponse = gameService.createGame(
                 sizeHorizontal,
-                sizeVertical,
-                mines)
+                sizeVertical)
 
         return ResponseEntity
                 .created(builder.path("games/${gameResponse.id}")
@@ -35,8 +33,7 @@ class GameController(
     }
 
     private fun validateInput(sizeHorizontal: Int,
-                              sizeVertical: Int,
-                              mines: Int): ResponseEntity<Problem>? {
+                              sizeVertical: Int): ResponseEntity<Problem>? {
         val errorMessages = mutableListOf<String>()
 
         if (sizeHorizontal <= 0)
@@ -44,9 +41,6 @@ class GameController(
 
         if (sizeVertical <= 0)
             errorMessages += "size_horizontal must be greater than 0"
-
-        if (mines <= 0)
-            errorMessages += "mines must be greater than 0"
 
         return if (errorMessages.isEmpty()) null else buildProblem(errorMessages)
     }

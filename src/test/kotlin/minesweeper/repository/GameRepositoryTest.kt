@@ -16,7 +16,7 @@ class GameRepositoryTest {
 
         val cellEntity = CellEntity(0, 0)
         val board = listOf(listOf(cellEntity))
-        val boardEntity = BoardEntity(1, 1, 0, board)
+        val boardEntity = BoardEntity(1, 1, board)
         val gameEntity = GameEntity(UUID.randomUUID(), boardEntity)
 
         gameRepository.saveGame(gameEntity)

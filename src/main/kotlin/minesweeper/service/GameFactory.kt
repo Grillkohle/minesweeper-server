@@ -8,12 +8,9 @@ import org.springframework.stereotype.Service
 @Service
 class GameFactory {
     fun createGame(sizeHorizontal: Int,
-                   sizeVertical: Int,
-                   mines: Int
-    ): GameEntity {
+                   sizeVertical: Int): GameEntity {
         val boardEntity = BoardEntity(sizeHorizontal = sizeHorizontal,
                 sizeVertical = sizeVertical,
-                mines = mines,
                 board = List(sizeHorizontal) { horizontalIndex -> createColumn(horizontalIndex, sizeVertical) })
 
         return GameEntity(board = boardEntity)
