@@ -20,9 +20,7 @@ class GameGenerator {
                     mines = mines,
                     board = generateBoardEntityArray(sizeHorizontal, sizeVertical))
 
-            return GameEntity(
-                    id = UUID.randomUUID(),
-                    board = boardEntity)
+            return GameEntity(board = boardEntity)
         }
 
         private fun generateBoardEntityArray(sizeHorizontal: Int,
