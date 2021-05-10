@@ -9,19 +9,19 @@ class GameFactoryTest {
 
     @Test
     fun `test that board is generated correctly and each cell has the correct indices`() {
-        val sizeHorizontal = 10
-        val sizeVertical = 5
+        val horizontalSize = 10
+        val verticalSize = 5
 
-        val gameEntity = gameFactory.createGame(sizeHorizontal, sizeVertical)
+        val gameEntity = gameFactory.createGame(horizontalSize, verticalSize)
 
         assertNotNull(gameEntity.id)
-        assertEquals(Pair(sizeHorizontal, sizeVertical), Pair(gameEntity.board.sizeHorizontal, gameEntity.board.sizeVertical))
+        assertEquals(Pair(horizontalSize, verticalSize), Pair(gameEntity.board.horizontalSize, gameEntity.board.verticalSize))
         val board = gameEntity.board.board
 
         for (horizontalIndex in board.indices) {
             for (verticalIndex in board.first().indices) {
-                assertEquals(horizontalIndex, board[horizontalIndex][verticalIndex].indexHorizontal)
-                assertEquals(verticalIndex, board[horizontalIndex][verticalIndex].indexVertical)
+                assertEquals(horizontalIndex, board[horizontalIndex][verticalIndex].horizontalIndex)
+                assertEquals(verticalIndex, board[horizontalIndex][verticalIndex].verticalIndex)
             }
         }
     }

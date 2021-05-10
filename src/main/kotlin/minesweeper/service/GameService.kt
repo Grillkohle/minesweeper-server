@@ -10,9 +10,9 @@ class GameService(
         private val gameMapper: GameMapper,
         private val gameRepository: GameRepository,
 ) {
-    fun createGame(sizeHorizonal: Int,
-                   sizeVertical: Int): GameResponse {
-        val gameEntity = gameFactory.createGame(sizeHorizonal, sizeVertical)
+    fun createGame(horizontalSize: Int,
+                   verticalSize: Int): GameResponse {
+        val gameEntity = gameFactory.createGame(horizontalSize, verticalSize)
         gameRepository.saveGame(gameEntity)
 
         return gameMapper.toGameResponse(gameEntity)

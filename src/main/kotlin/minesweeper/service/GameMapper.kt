@@ -19,16 +19,16 @@ class GameMapper {
 
     private fun toBoardResponse(boardEntity: BoardEntity): BoardResponse {
         return BoardResponse(
-                sizeHorizontal = boardEntity.sizeHorizontal,
-                sizeVertical = boardEntity.sizeVertical,
+                horizontalSize = boardEntity.horizontalSize,
+                verticalSize = boardEntity.verticalSize,
                 board = boardEntity.board.map { outerArray -> outerArray.map { cell -> toCellResponse(cell) } }
         )
     }
 
     private fun toCellResponse(cellEntity: CellEntity): CellResponse {
         return CellResponse(
-                indexHorizontal = cellEntity.indexHorizontal,
-                indexVertical = cellEntity.indexVertical
+                horizontalIndex = cellEntity.horizontalIndex,
+                verticalIndex = cellEntity.verticalIndex
         )
     }
 }

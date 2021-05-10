@@ -11,26 +11,24 @@ import kotlin.random.Random
 
 class GameGenerator {
     companion object {
-        fun generateGameEntity(sizeHorizontal: Int = Random.nextInt(1, 10),
-                               sizeVertical: Int = Random.nextInt(1, 10),
-                               mines: Int = Random.nextInt(1, sizeHorizontal)): GameEntity {
+        fun generateGameEntity(horizontalSize: Int = Random.nextInt(1, 10),
+                               verticalSize: Int = Random.nextInt(1, 10)): GameEntity {
             val boardEntity = BoardEntity(
-                    sizeHorizontal = sizeHorizontal,
-                    sizeVertical = sizeVertical,
-                    mines = mines,
-                    board = generateBoardEntityArray(sizeHorizontal, sizeVertical))
+                    horizontalSize = horizontalSize,
+                    verticalSize = verticalSize,
+                    board = generateBoardEntityArray(horizontalSize, verticalSize))
 
             return GameEntity(board = boardEntity)
         }
 
-        private fun generateBoardEntityArray(sizeHorizontal: Int,
-                                             sizeVertical: Int): List<List<CellEntity>> {
+        private fun generateBoardEntityArray(horizontalSize: Int,
+                                             verticalSize: Int): List<List<CellEntity>> {
             val board = mutableListOf<List<CellEntity>>()
 
-            for (columnIndex in 0..sizeHorizontal) {
+            for (columnIndex in 0..horizontalSize) {
                 val column = mutableListOf<CellEntity>()
 
-                for (rowIndex in 0..sizeVertical) {
+                for (rowIndex in 0..verticalSize) {
                     column.add(rowIndex, CellEntity(columnIndex, rowIndex))
                 }
 
@@ -39,28 +37,26 @@ class GameGenerator {
             return board.toList()
         }
 
-        fun generateGameResponse(sizeHorizontal: Int = Random.nextInt(1, 10),
-                                 sizeVertical: Int = Random.nextInt(1, 10),
-                                 mines: Int = Random.nextInt(1, 10)): GameResponse {
+        fun generateGameResponse(horizontalSize: Int = Random.nextInt(1, 10),
+                                 verticalSize: Int = Random.nextInt(1, 10)): GameResponse {
             val boardResponse = BoardResponse(
-                    sizeHorizontal = sizeHorizontal,
-                    sizeVertical = sizeVertical,
-                    mines = mines,
-                    board = generateBoardResponseArray(sizeHorizontal, sizeVertical))
+                    horizontalSize = horizontalSize,
+                    verticalSize = verticalSize,
+                    board = generateBoardResponseArray(horizontalSize, verticalSize))
 
             return GameResponse(
                     id = UUID.randomUUID(),
                     board = boardResponse)
         }
 
-        private fun generateBoardResponseArray(sizeHorizontal: Int,
-                                               sizeVertical: Int): List<List<CellResponse>> {
+        private fun generateBoardResponseArray(horizontalSize: Int,
+                                               verticalSize: Int): List<List<CellResponse>> {
             val board = mutableListOf<List<CellResponse>>()
 
-            for (columnIndex in 0..sizeHorizontal) {
+            for (columnIndex in 0..horizontalSize) {
                 val column = mutableListOf<CellResponse>()
 
-                for (rowIndex in 0..sizeVertical) {
+                for (rowIndex in 0..verticalSize) {
                     column.add(rowIndex, CellResponse(columnIndex, rowIndex))
                 }
 

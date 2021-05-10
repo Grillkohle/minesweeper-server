@@ -27,7 +27,7 @@ class GameServiceTest {
 
     @Test
     fun `ensure that game is generated, saved, mapped`() {
-        val gameEntity = GameGenerator.generateGameEntity(10, 10, 10)
+        val gameEntity = GameGenerator.generateGameEntity(10, 10)
         every { gameFactory.createGame(10, 10) } returns gameEntity
         every { gameRepository.saveGame(gameEntity) } returns Unit
         every { gameMapper.toGameResponse(gameEntity) } returns GameGenerator.generateGameResponse()
