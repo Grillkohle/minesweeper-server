@@ -6,13 +6,17 @@ import org.springframework.stereotype.Service
 
 @Service
 class GameService (
-    val gameFactory: GameFactory,
-    val gameRepository: GameRepository
+    private val gameFactory: GameFactory,
+    private val gameMapper: GameMapper,
+    private val gameRepository: GameRepository,
 ) {
     fun createGame(sizeHorizonal: Int,
                    sizeVertical: Int,
                    mines: Int
     ): GameResponse {
-        TODO()
+        val gameEntity = gameFactory.createGame(sizeHorizonal, sizeVertical, mines)
+        gameRepository.saveGame(gameEntity)
+
+        return gameMapper.toGameResponse(gameEntity)
     }
 }

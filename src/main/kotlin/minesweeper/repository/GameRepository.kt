@@ -8,7 +8,7 @@ import java.util.UUID
 class GameRepository {
     var gameMap: MutableMap<UUID, GameEntity> = HashMap()
 
-    fun saveGame(game: GameEntity){
+    fun saveGame(game: GameEntity) {
         gameMap[game.id] = game
     }
     

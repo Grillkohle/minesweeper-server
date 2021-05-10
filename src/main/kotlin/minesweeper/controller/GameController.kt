@@ -11,7 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder
 
 @RestController
 class GameController(
-        val gameService: GameService
+        private val gameService: GameService
 ) {
     @PostMapping("/games")
     fun createGame(
