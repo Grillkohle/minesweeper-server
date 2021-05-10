@@ -1,0 +1,81 @@
+openapi: 3.0.0
+info:
+  title: API to interact with the minesweeper server
+  description: This API allows a client to interact with the server to play the minesweeper game
+  version: 1.0.0
+servers:
+  - url: 'https'
+paths:
+  /games:
+    post:
+      description: Creates a new minesweeper game
+      parameters:
+        - in: query
+          name: size_horizontal
+          schema:
+            type: integer
+          description: The size of the game board in the horizontal dimension. Must be a non-zero positive integer.
+          required: true
+        - in: query
+          name: size_vertical
+          schema:
+            type: integer
+          description: The size of the game board in the horizontal dimension. Must be a non-zero positive integer.
+          required: true
+        - in: query
+          name: mines
+          schema:
+            type: integer
+          description: The number of mines that are placed on the board.  Must be a non-zero positive integer.
+          required: true
+      responses:
+        "201":
+          description: The game has been created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/game'
+        "400":
+           description: The board could not be created due to invalid input parameters.
+           content: 
+             application/json:
+               schema:
+                 $ref: 'https://opensource.zalando.com/problem/schema.yaml#/Problem'
+components:
+  schemas:
+    game:
+      title: A game resource containing the game state as visible to the user
+      type: object
+      properties:
+        board:
+          $ref: '#/components/schemas/board'
+        id:
+          type: uuid
+          description: The unique identifier of the game
+      required: 
+        - board
+
+    board:
+      type: object
+      description: A two-dimensional array of cells that describe the game board state
+      properties:
+        cells:
+          type: array
+          items:
+            type: array
+            items:
+              items:
+                $ref: '#/components/schemas/cell'
+      required: 
+        - cells
+
+    cell:
+      type: object
+      properties:
+        index_horizontal:
+          type: integer
+        index_vertical:
+          type: integer
+      required:
+        - index_horizontal
+        - index_vertical
