@@ -22,7 +22,7 @@ class GameMapperTest {
 
         for (column in boardResponse.board.indices) {
             for (row in boardResponse.board[column].indices) {
-                val cellEntity = gameEntity.board.board[column][row]
+                val cellEntity = gameEntity.board.cells[column][row]
                 val cellResponse = boardResponse.board[column][row]
 
                 assertEquals(cellEntity.horizontalIndex, cellResponse.horizontalIndex)

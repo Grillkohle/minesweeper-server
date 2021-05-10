@@ -16,7 +16,7 @@ class GameFactoryTest {
 
         assertNotNull(gameEntity.id)
         assertEquals(Pair(horizontalSize, verticalSize), Pair(gameEntity.board.horizontalSize, gameEntity.board.verticalSize))
-        val board = gameEntity.board.board
+        val board = gameEntity.board.cells
 
         for (horizontalIndex in board.indices) {
             for (verticalIndex in board.first().indices) {

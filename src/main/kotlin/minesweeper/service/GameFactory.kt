@@ -12,7 +12,7 @@ class GameFactory {
         val boardEntity = BoardEntity(
                 horizontalSize = horizontalSize,
                 verticalSize = verticalSize,
-                board = List(horizontalSize) { horizontalIndex -> createColumn(horizontalIndex, verticalSize) })
+                cells = List(horizontalSize) { horizontalIndex -> createColumn(horizontalIndex, verticalSize) })
 
         return GameEntity(board = boardEntity)
     }
