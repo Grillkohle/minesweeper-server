@@ -21,7 +21,7 @@ class GameMapper {
         return BoardResponse(
                 horizontalSize = boardEntity.horizontalSize,
                 verticalSize = boardEntity.verticalSize,
-                board = boardEntity.cells.map { outerArray -> outerArray.map { cell -> toCellResponse(cell) } }
+                cells = boardEntity.cells.map { column -> column.map { cell -> toCellResponse(cell) } }
         )
     }
 
