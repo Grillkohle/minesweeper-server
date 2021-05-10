@@ -53,6 +53,12 @@ components:
       type: object
       description: A two-dimensional array of cells that describe the game board state
       properties:
+        horizontal_size:
+          type: integer
+          description: The size of the game board in the horizontal dimension.
+        vertical_size:
+          type: integer
+          description: The size of the game board in the vertical dimension.
         cells:
           type: array
           items:
@@ -61,6 +67,8 @@ components:
               items:
                 $ref: '#/components/schemas/cell'
       required: 
+        - horizontal_size
+        - vertical_size
         - cells
 
     cell:
