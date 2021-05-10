@@ -16,7 +16,7 @@ class GameGenerator {
             val boardEntity = BoardEntity(
                     horizontalSize = horizontalSize,
                     verticalSize = verticalSize,
-                    board = generateBoardEntityArray(horizontalSize, verticalSize))
+                    cells = generateBoardEntityArray(horizontalSize, verticalSize))
 
             return GameEntity(board = boardEntity)
         }
