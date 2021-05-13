@@ -21,14 +21,16 @@ class GameMapper {
         return BoardResponse(
                 horizontalSize = boardEntity.horizontalSize,
                 verticalSize = boardEntity.verticalSize,
-                cells = boardEntity.cells.map { column -> column.map { cell -> toCellResponse(cell) } }
+                cells = boardEntity.cells.map { column -> column.map { cell -> toCellResponse(cell) } },
+                numberOfMines = boardEntity.numberOfMines
         )
     }
 
     private fun toCellResponse(cellEntity: CellEntity): CellResponse {
         return CellResponse(
                 horizontalIndex = cellEntity.horizontalIndex,
-                verticalIndex = cellEntity.verticalIndex
+                verticalIndex = cellEntity.verticalIndex,
+                isMine = cellEntity.isMine
         )
     }
 }

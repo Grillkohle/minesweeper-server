@@ -37,8 +37,7 @@ class GameGenerator {
                     if (placedNumberOfMines < numberOfMines && Random.nextBoolean()) {
                         column.add(rowIndex, CellEntity(columnIndex, rowIndex, true))
                         placedNumberOfMines++
-                    }
-                    else
+                    } else
                         column.add(rowIndex, CellEntity(columnIndex, rowIndex, false))
                 }
 
@@ -49,10 +48,13 @@ class GameGenerator {
 
         fun generateGameResponse(horizontalSize: Int = Random.nextInt(1, 10),
                                  verticalSize: Int = Random.nextInt(1, 10)): GameResponse {
+            val (cells, numberOfMines) = generateBoardResponseArray(horizontalSize, verticalSize)
             val boardResponse = BoardResponse(
                     horizontalSize = horizontalSize,
                     verticalSize = verticalSize,
-                    cells = generateBoardResponseArray(horizontalSize, verticalSize))
+                    cells = cells,
+                    numberOfMines = numberOfMines
+            )
 
             return GameResponse(
                     id = UUID.randomUUID(),
@@ -60,19 +62,25 @@ class GameGenerator {
         }
 
         private fun generateBoardResponseArray(horizontalSize: Int,
-                                               verticalSize: Int): List<List<CellResponse>> {
+                                               verticalSize: Int): Pair<List<List<CellResponse>>, Int> {
+            val numberOfMines = sqrt((horizontalSize * verticalSize).toDouble()).toInt()
+            var placedNumberOfMines = 0
             val board = mutableListOf<List<CellResponse>>()
 
             for (columnIndex in 0..horizontalSize) {
                 val column = mutableListOf<CellResponse>()
 
                 for (rowIndex in 0..verticalSize) {
-                    column.add(rowIndex, CellResponse(columnIndex, rowIndex))
+                    if (placedNumberOfMines < numberOfMines && Random.nextBoolean()) {
+                        column.add(rowIndex, CellResponse(columnIndex, rowIndex, true))
+                        placedNumberOfMines++
+                    } else
+                        column.add(rowIndex, CellResponse(columnIndex, rowIndex, false))
                 }
 
                 board.add(columnIndex, column.toList())
             }
-            return board.toList()
+            return Pair(board.toList(), numberOfMines)
         }
     }
 }
