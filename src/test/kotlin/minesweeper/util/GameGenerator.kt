@@ -48,12 +48,11 @@ class GameGenerator {
 
         fun generateGameResponse(horizontalSize: Int = Random.nextInt(1, 10),
                                  verticalSize: Int = Random.nextInt(1, 10)): GameResponse {
-            val (cells, numberOfMines) = generateBoardResponseArray(horizontalSize, verticalSize)
             val boardResponse = BoardResponse(
                     horizontalSize = horizontalSize,
                     verticalSize = verticalSize,
-                    cells = cells,
-                    numberOfMines = numberOfMines
+                    cells = generateBoardResponseArray(horizontalSize, verticalSize),
+                    numberOfMines = sqrt((horizontalSize * verticalSize).toDouble()).toInt()
             )
 
             return GameResponse(
@@ -62,25 +61,19 @@ class GameGenerator {
         }
 
         private fun generateBoardResponseArray(horizontalSize: Int,
-                                               verticalSize: Int): Pair<List<List<CellResponse>>, Int> {
-            val numberOfMines = sqrt((horizontalSize * verticalSize).toDouble()).toInt()
-            var placedNumberOfMines = 0
+                                               verticalSize: Int): List<List<CellResponse>> {
             val board = mutableListOf<List<CellResponse>>()
 
             for (columnIndex in 0..horizontalSize) {
                 val column = mutableListOf<CellResponse>()
 
                 for (rowIndex in 0..verticalSize) {
-                    if (placedNumberOfMines < numberOfMines && Random.nextBoolean()) {
-                        column.add(rowIndex, CellResponse(columnIndex, rowIndex, true))
-                        placedNumberOfMines++
-                    } else
-                        column.add(rowIndex, CellResponse(columnIndex, rowIndex, false))
+                    column.add(rowIndex, CellResponse(columnIndex, rowIndex))
                 }
 
                 board.add(columnIndex, column.toList())
             }
-            return Pair(board.toList(), numberOfMines)
+            return board.toList()
         }
     }
 }

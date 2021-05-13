@@ -82,9 +82,6 @@ components:
           type: integer
         vertical_index:
           type: integer
-        is_mine:
-          type: boolean
       required:
         - horizontal_index
         - vertical_index
-        - is_mine

@@ -29,8 +29,7 @@ class GameMapper {
     private fun toCellResponse(cellEntity: CellEntity): CellResponse {
         return CellResponse(
                 horizontalIndex = cellEntity.horizontalIndex,
-                verticalIndex = cellEntity.verticalIndex,
-                isMine = cellEntity.isMine
+                verticalIndex = cellEntity.verticalIndex
         )
     }
 }
