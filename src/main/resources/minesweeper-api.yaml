@@ -30,11 +30,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/game'
         "400":
-           description: The board could not be created due to invalid input parameters.
-           content: 
-             application/json:
-               schema:
-                 $ref: 'https://opensource.zalando.com/problem/schema.yaml#/Problem'
+          description: The board could not be created due to invalid input parameters.
+          content:
+            application/json:
+              schema:
+                $ref: 'https://opensource.zalando.com/problem/schema.yaml#/Problem'
 components:
   schemas:
     game:
@@ -44,9 +44,10 @@ components:
         board:
           $ref: '#/components/schemas/board'
         id:
-          type: uuid
+          type: string
+          format: uuid
           description: The unique identifier of the game
-      required: 
+      required:
         - board
 
     board:
@@ -66,10 +67,13 @@ components:
             items:
               items:
                 $ref: '#/components/schemas/cell'
-      required: 
+        number_of_mines:
+          type: integer
+      required:
         - horizontal_size
         - vertical_size
         - cells
+        - number_of_mines
 
     cell:
       type: object

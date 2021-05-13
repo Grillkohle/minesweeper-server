@@ -20,10 +20,10 @@ class GameMapperTest {
         assertEquals(gameEntity.board.horizontalSize, boardResponse.horizontalSize)
         assertEquals(gameEntity.board.verticalSize, boardResponse.verticalSize)
 
-        for (column in boardResponse.board.indices) {
-            for (row in boardResponse.board[column].indices) {
+        for (column in boardResponse.cells.indices) {
+            for (row in boardResponse.cells[column].indices) {
                 val cellEntity = gameEntity.board.cells[column][row]
-                val cellResponse = boardResponse.board[column][row]
+                val cellResponse = boardResponse.cells[column][row]
 
                 assertEquals(cellEntity.horizontalIndex, cellResponse.horizontalIndex)
                 assertEquals(cellEntity.verticalIndex, cellResponse.verticalIndex)
