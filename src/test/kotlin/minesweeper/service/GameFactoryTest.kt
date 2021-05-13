@@ -25,4 +25,22 @@ class GameFactoryTest {
             }
         }
     }
+
+    @Test
+    fun `test that board has the correct number of mines`() {
+        val horizontalSize = 10
+        val verticalSize = 10
+        val expectedMines = 10 // sqrt horizontalSize * verticalSize
+
+        val gameEntity = gameFactory.createGame(horizontalSize, verticalSize)
+
+        val actualNumberOfMines =
+                gameEntity.board.cells.map { column ->
+                    column.filter { cell -> cell.isMine }
+                            .map { 1 }
+                            .sum()
+                }.sum()
+
+        assertEquals(expectedMines, actualNumberOfMines)
+    }
 }
