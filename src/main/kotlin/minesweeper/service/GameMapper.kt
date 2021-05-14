@@ -29,7 +29,8 @@ class GameMapper {
     private fun toCellResponse(cellEntity: CellEntity): CellResponse {
         return CellResponse(
                 horizontalIndex = cellEntity.horizontalIndex,
-                verticalIndex = cellEntity.verticalIndex
+                verticalIndex = cellEntity.verticalIndex,
+                numberOfAdjacentMines = cellEntity.numberOfAdjacentMines
         )
     }
 }

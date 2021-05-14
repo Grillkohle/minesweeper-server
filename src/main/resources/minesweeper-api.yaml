@@ -82,6 +82,9 @@ components:
           type: integer
         vertical_index:
           type: integer
+        number_of_adjacent_mines:
+          type: integer
+          description: Indicates the number of mines which are adjacent to this cell. Must be between 0 and 8.
       required:
         - horizontal_index
         - vertical_index

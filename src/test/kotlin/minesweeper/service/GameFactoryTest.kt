@@ -1,5 +1,6 @@
 package minesweeper.service
 
+import minesweeper.repository.entity.CellEntity
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -37,10 +38,30 @@ class GameFactoryTest {
         val actualNumberOfMines =
                 gameEntity.board.cells.map { column ->
                     column.filter { cell -> cell.isMine }
-                            .map { 1 }
-                            .sum()
+                            .count()
                 }.sum()
 
         assertEquals(expectedMines, actualNumberOfMines)
+    }
+
+    @Test
+    fun `test that the number of adjacent mines is set correctly`() {
+        val horizontalSize = 10
+        val verticalSize = 10
+
+        val gameEntity = gameFactory.createGame(horizontalSize, verticalSize)
+        val cells = gameEntity.board.cells
+
+        cells.forEach { column ->
+            column.forEach { cell ->
+                val expectedNeighboringMines =
+                        CellEntity.getNeighborCoordinates(
+                                coordinates = cell.horizontalIndex to cell.verticalIndex,
+                                maxCoordinates = horizontalSize - 1 to verticalSize - 1)
+                                .map { (x, y) -> cells[x][y] }
+                                .count { it.isMine }
+                assertEquals(expectedNeighboringMines, cell.numberOfAdjacentMines)
+            }
+        }
     }
 }
