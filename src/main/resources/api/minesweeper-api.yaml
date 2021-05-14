@@ -85,6 +85,11 @@ components:
         number_of_adjacent_mines:
           type: integer
           description: Indicates the number of mines which are adjacent to this cell. Must be between 0 and 8.
+        state:
+          type: string
+          x-extensible-enum:
+            - CONCEALED
       required:
         - horizontal_index
         - vertical_index
+        - state
