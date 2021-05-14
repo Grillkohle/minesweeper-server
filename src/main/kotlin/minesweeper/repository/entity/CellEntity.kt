@@ -5,9 +5,9 @@ class CellEntity(val horizontalIndex: Int,
                  val isMine: Boolean = false,
                  val numberOfAdjacentMines: Int = 0) {
     companion object {
-        private val neighborCoordinateOffsets = listOf(Pair(-1, -1), Pair(0, -1), Pair(1, -1),
-                Pair(-1, 0), Pair(1, 0),
-                Pair(-1, 1), Pair(0, 1), Pair(1, 1))
+        private val neighborCoordinateOffsets = setOf(Pair(-1, -1), Pair(0, -1), Pair(1, -1),
+                                                      Pair(-1, 0),               Pair(1, 0),
+                                                      Pair(-1, 1),  Pair(0, 1),  Pair(1, 1))
 
         fun getNeighborCoordinates(coordinates: Pair<Int, Int>, maxCoordinates: Pair<Int, Int>): Set<Pair<Int, Int>> {
             val (x, y) = coordinates
