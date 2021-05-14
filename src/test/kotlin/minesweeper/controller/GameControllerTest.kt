@@ -54,4 +54,17 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc) {
         )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest)
     }
+
+    @Test
+    fun `undefined runtime exception is thrown, expect 500`() {
+        `when`(gameService.createGame(anyInt(), anyInt())).thenThrow(RuntimeException("OMG RUNTIME EXCEPTION"))
+
+        mockMvc.perform(
+                request(HttpMethod.POST, "/games")
+                        .queryParam("horizontal_size", "10")
+                        .queryParam("vertical_size", "10")
+        )
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError)
+                .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
+    }
 }

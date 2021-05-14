@@ -2,14 +2,26 @@ package minesweeper.service
 
 import minesweeper.controller.model.BoardResponse
 import minesweeper.controller.model.CellResponse
+import minesweeper.controller.model.CellResponseState
 import minesweeper.controller.model.GameResponse
 import minesweeper.repository.entity.BoardEntity
 import minesweeper.repository.entity.CellEntity
+import minesweeper.repository.entity.CellEntity.CellEntityState
 import minesweeper.repository.entity.GameEntity
 import org.springframework.stereotype.Service
+import java.lang.RuntimeException
 
 @Service
 class GameMapper {
+    companion object {
+        private val enumTranslations = mapOf(
+                CellEntityState.CONCEALED to CellResponseState.CONCEALED
+        )
+
+        fun resolveCellResponseState(state: CellEntityState): CellResponseState{
+            return enumTranslations[state] ?: throw RuntimeException("Incomplete status mapping!")
+        }
+    }
     fun toGameResponse(gameEntity: GameEntity): GameResponse {
         return GameResponse(
                 id = gameEntity.id,
@@ -30,7 +42,7 @@ class GameMapper {
         return CellResponse(
                 horizontalIndex = cellEntity.horizontalIndex,
                 verticalIndex = cellEntity.verticalIndex,
-                numberOfAdjacentMines = cellEntity.numberOfAdjacentMines
+                state = resolveCellResponseState(cellEntity.state)
         )
     }
 }
