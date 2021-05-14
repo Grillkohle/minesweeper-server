@@ -27,6 +27,7 @@ class GameMapperTest {
 
                 assertEquals(cellEntity.horizontalIndex, cellResponse.horizontalIndex)
                 assertEquals(cellEntity.verticalIndex, cellResponse.verticalIndex)
+                assertEquals(cellEntity.numberOfAdjacentMines, cellResponse.numberOfAdjacentMines)
             }
         }
     }

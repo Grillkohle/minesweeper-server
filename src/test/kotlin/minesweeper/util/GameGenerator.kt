@@ -64,14 +64,14 @@ class GameGenerator {
                                                verticalSize: Int): List<List<CellResponse>> {
             val board = mutableListOf<List<CellResponse>>()
 
-            for (columnIndex in 0..horizontalSize) {
+            for (horizontalIndex in 0 until horizontalSize) {
                 val column = mutableListOf<CellResponse>()
 
-                for (rowIndex in 0..verticalSize) {
-                    column.add(rowIndex, CellResponse(columnIndex, rowIndex))
+                for (verticalIndex in 0 until verticalSize) {
+                    column.add(verticalIndex, CellResponse(horizontalIndex, verticalIndex))
                 }
 
-                board.add(columnIndex, column.toList())
+                board.add(horizontalIndex, column.toList())
             }
             return board.toList()
         }
