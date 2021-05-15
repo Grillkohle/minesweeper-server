@@ -1,6 +1,13 @@
 package minesweeper.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import minesweeper.controller.model.CellResponse
+import minesweeper.controller.model.CellResponseState
+import minesweeper.controller.model.CellStateTransitionRequest
+import minesweeper.controller.model.CellStateTransitionResponse
+import minesweeper.controller.model.GameStateResponse
 import minesweeper.service.GameService
+import minesweeper.service.exception.ResourceNotFoundException
 import minesweeper.util.GameGenerator
 import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.Test
@@ -15,9 +22,11 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import java.util.UUID
 
 @WebMvcTest(controllers = [GameController::class])
-class GameControllerTest(@Autowired val mockMvc: MockMvc) {
+class GameControllerTest(@Autowired val mockMvc: MockMvc,
+                         @Autowired val objectMapper: ObjectMapper) {
     @MockBean
     lateinit var gameService: GameService
 
@@ -56,7 +65,7 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
-    fun `undefined runtime exception is thrown, expect 500`() {
+    fun `create game undefined runtime exception is thrown, expect 500`() {
         `when`(gameService.createGame(anyInt(), anyInt())).thenThrow(RuntimeException("OMG RUNTIME EXCEPTION"))
 
         mockMvc.perform(
@@ -66,5 +75,84 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc) {
         )
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError)
                 .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
+    }
+
+    @Test
+    fun `change cell state expect 200 ok`() {
+        val gameId = UUID.randomUUID()
+        val request = CellStateTransitionRequest(
+                horizontalIndex = 0,
+                verticalIndex = 0,
+                state = CellResponseState.REVEALED
+        )
+
+        val response = CellStateTransitionResponse(
+                gameState = GameStateResponse.IN_PROGRESS,
+                changedCells = listOf(
+                        CellResponse(
+                                horizontalIndex = 0,
+                                verticalIndex = 0,
+                                state = CellResponseState.REVEALED
+                        )
+                )
+        )
+
+        `when`(gameService.updateCellState(gameId, request)).thenReturn(response)
+
+        mockMvc.perform(
+                request(HttpMethod.PUT, "/games/${gameId}/cells/state")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+
+        )
+                .andExpect(MockMvcResultMatchers.status().isOk)
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(response)))
+    }
+
+    @Test
+    fun `change cell state missing body expect 400`() {
+        mockMvc.perform(
+                request(HttpMethod.PUT, "/games/${UUID.randomUUID()}/cells/state")
+                        .contentType(MediaType.APPLICATION_JSON)
+        )
+                .andExpect(MockMvcResultMatchers.status().isBadRequest)
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+    }
+
+    @Test
+    fun `change cell state invalid body expect 400`() {
+        val request = CellStateTransitionRequest(
+                horizontalIndex = -1,
+                verticalIndex = -1,
+                state = CellResponseState.REVEALED
+        )
+        mockMvc.perform(
+                request(HttpMethod.PUT, "/games/${UUID.randomUUID()}/cells/state")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+        )
+                .andExpect(MockMvcResultMatchers.status().isBadRequest)
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+    }
+
+    @Test
+    fun `change cell state resource not found expect 404`() {
+        val gameId = UUID.randomUUID()
+        val request = CellStateTransitionRequest(
+                horizontalIndex = 0,
+                verticalIndex = 0,
+                state = CellResponseState.REVEALED
+        )
+
+        `when`(gameService.updateCellState(gameId, request)).thenThrow(ResourceNotFoundException("Failed to find resource."))
+        
+        mockMvc.perform(
+                request(HttpMethod.PUT, "/games/${gameId}/cells/state")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+        )
+                .andExpect(MockMvcResultMatchers.status().isNotFound)
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
     }
 }

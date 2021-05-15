@@ -37,7 +37,7 @@ paths:
                 $ref: 'https://opensource.zalando.com/problem/schema.yaml#/Problem'
 
   /games/{game_id}/cells/state:
-    post:
+    put:
       parameters:
         - in: path
           name: game_id
@@ -54,6 +54,12 @@ paths:
       responses:
         "200":
           description: The cell state transition was successfully performed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/cellStateTransitionResponse'
+        "400":
+          description: The cell state transition could not be performed due to invalid or missing input parameter(s).
           content:
             application/json:
               schema:

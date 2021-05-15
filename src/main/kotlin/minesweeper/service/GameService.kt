@@ -1,8 +1,11 @@
 package minesweeper.service
 
+import minesweeper.controller.model.CellStateTransitionRequest
+import minesweeper.controller.model.CellStateTransitionResponse
 import minesweeper.controller.model.GameResponse
 import minesweeper.repository.GameRepository
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class GameService(
@@ -16,5 +19,10 @@ class GameService(
         gameRepository.saveGame(gameEntity)
 
         return gameMapper.toGameResponse(gameEntity)
+    }
+
+    fun updateCellState(gameId: UUID, 
+                        transitionRequest: CellStateTransitionRequest): CellStateTransitionResponse {
+        TODO("Not yet implemented")
     }
 }
