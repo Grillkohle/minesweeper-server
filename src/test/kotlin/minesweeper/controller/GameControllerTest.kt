@@ -42,7 +42,7 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc,
                         .queryParam("vertical_size", "10")
         )
                 .andExpect(MockMvcResultMatchers.status().isCreated)
-                .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.LOCATION, containsString("/games/${expectedResponse.id}")))
     }
 
@@ -52,6 +52,7 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc,
                 request(HttpMethod.POST, "/games")
         )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest)
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
     }
 
     @Test
@@ -62,6 +63,7 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc,
                         .queryParam("vertical_size", "-1")
         )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest)
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
     }
 
     @Test
@@ -74,7 +76,7 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc,
                         .queryParam("vertical_size", "10")
         )
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError)
-                .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
     }
 
     @Test
@@ -137,6 +139,19 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc,
     }
 
     @Test
+    fun `change cell state invalid body missing parameters expect 400`() {
+        val request = mapOf("property" to "missing", "state" to "REVEALED")
+        
+        mockMvc.perform(
+                request(HttpMethod.PUT, "/games/${UUID.randomUUID()}/cells/state")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+        )
+                .andExpect(MockMvcResultMatchers.status().isBadRequest)
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+    }
+
+    @Test
     fun `change cell state resource not found expect 404`() {
         val gameId = UUID.randomUUID()
         val request = CellStateTransitionRequest(
@@ -146,7 +161,7 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc,
         )
 
         `when`(gameService.updateCellState(gameId, request)).thenThrow(ResourceNotFoundException("Failed to find resource."))
-        
+
         mockMvc.perform(
                 request(HttpMethod.PUT, "/games/${gameId}/cells/state")
                         .contentType(MediaType.APPLICATION_JSON)

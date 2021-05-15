@@ -6,6 +6,7 @@ import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -32,9 +33,17 @@ class ErrorHandler {
                         status = HttpStatus.BAD_REQUEST.value()))
     }
     
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleMethodArgumentNotValidException(exception: MethodArgumentNotValidException): ResponseEntity<Problem> {
+        return ResponseEntity.badRequest()
+                .body(Problem(
+                        title = "Bad Request",
+                        detail = "Missing/invalid request parameters: ${exception.allErrors}",
+                        status = HttpStatus.BAD_REQUEST.value()))
+    }
+    
     @ExceptionHandler(ResourceNotFoundException::class)
     fun handleResourceNotFoundException(exception: ResourceNotFoundException): ResponseEntity<Problem> {
-        log.error("Unknown exception: ", exception)
         return ResponseEntity.status(HttpStatus.NOT_FOUND.value())
                 .body(Problem(
                         title = "Not Found",
@@ -45,6 +54,7 @@ class ErrorHandler {
 
     @ExceptionHandler(RuntimeException::class)
     fun handleRuntimeException(exception: RuntimeException): ResponseEntity<Problem> {
+        log.error("Unknown exception: ", exception)
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .body(Problem(
                         title = "Internal Server Error",
