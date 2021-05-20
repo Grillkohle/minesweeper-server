@@ -58,7 +58,12 @@ class GameServiceTest {
     fun `test cell state transition game does not exist`() {
         every { gameRepository.findGame(any()) } returns null
 
-        assertThrows<ResourceNotFoundException> { gameService.updateCellState(UUID.randomUUID(), CellStateTransitionRequest(1, 1, CellResponseState.REVEALED)) }
+        assertThrows<ResourceNotFoundException> {
+            gameService.updateCellState(
+                UUID.randomUUID(),
+                CellStateTransitionRequest(1, 1, CellResponseState.REVEALED)
+            )
+        }
     }
 
     @Test
@@ -66,7 +71,12 @@ class GameServiceTest {
         val gameEntity = GameGenerator.generateGameEntity(10, 10)
         every { gameRepository.findGame(gameEntity.id) } returns gameEntity
 
-        assertThrows<ResourceNotFoundException> { gameService.updateCellState(gameEntity.id, CellStateTransitionRequest(11, 11, CellResponseState.REVEALED)) }
+        assertThrows<ResourceNotFoundException> {
+            gameService.updateCellState(
+                gameEntity.id,
+                CellStateTransitionRequest(11, 11, CellResponseState.REVEALED)
+            )
+        }
     }
 
     @Test
@@ -75,12 +85,21 @@ class GameServiceTest {
 
         val mine = findCellWith(gameEntity, isMine = true)
 
-        val cellResponse = CellResponse(mine.horizontalIndex, mine.verticalIndex, mine.numberOfAdjacentMines, CellResponseState.REVEALED, mine.isMine)
+        val cellResponse = CellResponse(
+            mine.horizontalIndex,
+            mine.verticalIndex,
+            mine.numberOfAdjacentMines,
+            CellResponseState.REVEALED,
+            mine.isMine
+        )
 
         every { gameRepository.findGame(gameEntity.id) } returns gameEntity
         every { gameMapper.toCellResponse(gameEntity.board.cells[mine.horizontalIndex][mine.verticalIndex]) } returns cellResponse
 
-        val response = gameService.updateCellState(gameEntity.id, CellStateTransitionRequest(mine.horizontalIndex, mine.verticalIndex, CellResponseState.REVEALED))
+        val response = gameService.updateCellState(
+            gameEntity.id,
+            CellStateTransitionRequest(mine.horizontalIndex, mine.verticalIndex, CellResponseState.REVEALED)
+        )
 
         assertEquals(GameResponseState.LOSS, response.gameState)
         assertEquals(1, response.changedCells.size)
@@ -100,12 +119,21 @@ class GameServiceTest {
         val gameEntity = GameImporter.createGameFromFile("src/test/resources/test_boards/2x2_with_2_mines")
 
         val nonMine = findCellWith(gameEntity, isMine = false)
-        val cellResponse = CellResponse(nonMine.horizontalIndex, nonMine.verticalIndex, nonMine.numberOfAdjacentMines, CellResponseState.REVEALED, nonMine.isMine)
+        val cellResponse = CellResponse(
+            nonMine.horizontalIndex,
+            nonMine.verticalIndex,
+            nonMine.numberOfAdjacentMines,
+            CellResponseState.REVEALED,
+            nonMine.isMine
+        )
 
         every { gameRepository.findGame(gameEntity.id) } returns gameEntity
         every { gameMapper.toCellResponse(gameEntity.board.cells[nonMine.horizontalIndex][nonMine.verticalIndex]) } returns cellResponse
 
-        val response = gameService.updateCellState(gameEntity.id, CellStateTransitionRequest(nonMine.horizontalIndex, nonMine.verticalIndex, CellResponseState.REVEALED))
+        val response = gameService.updateCellState(
+            gameEntity.id,
+            CellStateTransitionRequest(nonMine.horizontalIndex, nonMine.verticalIndex, CellResponseState.REVEALED)
+        )
 
         assertEquals(GameResponseState.IN_PROGRESS, response.gameState)
         assertEquals(1, response.changedCells.size)
@@ -139,12 +167,20 @@ class GameServiceTest {
             }
         }
 
-        val response = gameService.updateCellState(gameEntity.id, CellStateTransitionRequest(0, 0, CellResponseState.REVEALED))
+        val response =
+            gameService.updateCellState(gameEntity.id, CellStateTransitionRequest(0, 0, CellResponseState.REVEALED))
         assertEquals(GameResponseState.IN_PROGRESS, response.gameState)
         assertEquals(6, response.changedCells.size)
-        
-        for (changedCell in response.changedCells){
-            assertTrue(expectedRevealedCellIndices.contains(Pair(changedCell.horizontalIndex, changedCell.verticalIndex)))
+
+        for (changedCell in response.changedCells) {
+            assertTrue(
+                expectedRevealedCellIndices.contains(
+                    Pair(
+                        changedCell.horizontalIndex,
+                        changedCell.verticalIndex
+                    )
+                )
+            )
             assertEquals(CellResponseState.REVEALED, changedCell.state)
         }
 
@@ -161,30 +197,38 @@ class GameServiceTest {
 
         every { gameRepository.findGame(gameEntity.id) } returns gameEntity
 
-        val response = gameService.updateCellState(gameEntity.id, CellStateTransitionRequest(nonMine.horizontalIndex, nonMine.verticalIndex, CellResponseState.REVEALED))
+        val response = gameService.updateCellState(
+            gameEntity.id,
+            CellStateTransitionRequest(nonMine.horizontalIndex, nonMine.verticalIndex, CellResponseState.REVEALED)
+        )
 
         assertEquals(GameResponseState.IN_PROGRESS, response.gameState)
         assertEquals(0, response.changedCells.size)
 
         verify { gameRepository.findGame(gameEntity.id) }
     }
-    
+
     @Test
-    fun `test cell state transition not possible game already lost`(){
+    fun `test cell state transition not possible game already lost`() {
         val gameEntity = GameGenerator.generateGameEntity()
         gameEntity.state = GameEntityState.LOSS
-        
+
         every { gameRepository.findGame(gameEntity.id) } returns gameEntity
-        
-        assertThrows<GameNotModifiableException> { gameService.updateCellState(gameEntity.id, CellStateTransitionRequest(0, 0, CellResponseState.REVEALED)) }
+
+        assertThrows<GameNotModifiableException> {
+            gameService.updateCellState(
+                gameEntity.id,
+                CellStateTransitionRequest(0, 0, CellResponseState.REVEALED)
+            )
+        }
     }
 
     private fun findCellWith(gameEntity: GameEntity, isMine: Boolean): CellEntity {
         return gameEntity.board.cells
-                .map { column ->
-                    column.filter { cell -> cell.isMine == isMine }
-                }
-                .first { column -> column.isNotEmpty() }
-                .first()
+            .map { column ->
+                column.filter { cell -> cell.isMine == isMine }
+            }
+            .first { column -> column.isNotEmpty() }
+            .first()
     }
 }
