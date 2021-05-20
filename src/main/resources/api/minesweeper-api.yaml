@@ -35,6 +35,42 @@ paths:
             application/json:
               schema:
                 $ref: 'https://opensource.zalando.com/problem/schema.yaml#/Problem'
+
+  /games/{game_id}/cells:
+    patch: 
+      parameters:
+        - in: path
+          name: game_id
+          schema:
+            type: string
+            format: uuid
+          description: The game id to which the cell belongs which is going to be changed
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/cellStateTransitionRequest'
+      responses:
+        "200":
+          description: The cell state transition was successfully performed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/cellStateTransitionResponse'
+        "400":
+          description: The cell state transition could not be performed due to invalid or missing input parameter(s).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/cellStateTransitionResponse'
+        "404":
+          description: The game or cell for which the state transition is triggered could not be found.
+          content:
+            application/json:
+              schema:
+                $ref: 'https://opensource.zalando.com/problem/schema.yaml#/Problem'
+
 components:
   schemas:
     game:
@@ -47,7 +83,11 @@ components:
           type: string
           format: uuid
           description: The unique identifier of the game
+        state:
+          $ref: '#/components/schemas/gameState'
       required:
+        - id
+        - state
         - board
 
     board:
@@ -86,10 +126,50 @@ components:
           type: integer
           description: Indicates the number of mines which are adjacent to this cell. Must be between 0 and 8.
         state:
-          type: string
-          x-extensible-enum:
-            - CONCEALED
+          $ref: '#/components/schemas/cellState'
       required:
         - horizontal_index
         - vertical_index
         - state
+
+    gameState:
+      type: string
+      x-extensible-enum:
+        - IN_PROGRESS
+        - LOSS
+
+    cellState:
+      type: string
+      x-extensible-enum:
+        - CONCEALED
+        - REVEALED
+
+    cellStateTransitionRequest:
+      type: object
+      properties:
+        horizontal_index:
+          type: integer
+          description: The horizontal index of the cell to be changed. Must be between 0 and board's horizontal size - 1.
+        vertical_index:
+          type: integer
+          description: The vertical index of the cell to be changed. Must be between 0 and board's vertical size - 1.
+        state:
+          $ref: '#/components/schemas/cellState'
+      required:
+        - horizontal_index
+        - vertical_index
+        - changed_cells
+
+    cellStateTransitionResponse:
+      type: object
+      properties:
+        game_state:
+          $ref: '#/components/schemas/gameState'
+        changed_cells:
+          type: array
+          items:
+            $ref: '#/components/schemas/cell'
+          description: Contains all cells which have had their status changed as a result of the original cell state transition.
+      required:
+        - game_state
+        - changed_cells
