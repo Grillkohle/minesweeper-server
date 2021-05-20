@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import javax.validation.ConstraintViolationException
 
 @ControllerAdvice
 class ErrorHandler {
@@ -35,6 +36,18 @@ class ErrorHandler {
                 Problem(
                     title = "Bad Request",
                     detail = "Missing request body: ${exception.message}",
+                    status = HttpStatus.BAD_REQUEST.value()
+                )
+            )
+    }
+
+    @ExceptionHandler(ConstraintViolationException::class)
+    fun handleConstraintViolationException(exception: ConstraintViolationException): ResponseEntity<Problem> {
+        return ResponseEntity.badRequest()
+            .body(
+                Problem(
+                    title = "Bad Request",
+                    detail = "Invalid parameter(s): ${exception.message}",
                     status = HttpStatus.BAD_REQUEST.value()
                 )
             )
