@@ -36,8 +36,8 @@ paths:
               schema:
                 $ref: 'https://opensource.zalando.com/problem/schema.yaml#/Problem'
 
-  /games/{game_id}/cells/state:
-    put:
+  /games/{game_id}/cells:
+    patch: 
       parameters:
         - in: path
           name: game_id

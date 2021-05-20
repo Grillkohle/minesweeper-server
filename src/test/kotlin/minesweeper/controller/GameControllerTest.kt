@@ -102,7 +102,7 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc,
         `when`(gameService.updateCellState(gameId, request)).thenReturn(response)
 
         mockMvc.perform(
-                request(HttpMethod.PUT, "/games/${gameId}/cells/state")
+                request(HttpMethod.PATCH, "/games/${gameId}/cells")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
 
@@ -115,7 +115,7 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc,
     @Test
     fun `change cell state missing body expect 400`() {
         mockMvc.perform(
-                request(HttpMethod.PUT, "/games/${UUID.randomUUID()}/cells/state")
+                request(HttpMethod.PATCH, "/games/${UUID.randomUUID()}/cells")
                         .contentType(MediaType.APPLICATION_JSON)
         )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest)
@@ -130,7 +130,7 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc,
                 state = CellResponseState.REVEALED
         )
         mockMvc.perform(
-                request(HttpMethod.PUT, "/games/${UUID.randomUUID()}/cells/state")
+                request(HttpMethod.PATCH, "/games/${UUID.randomUUID()}/cells")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
         )
@@ -143,7 +143,7 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc,
         val request = mapOf("property" to "missing", "state" to "REVEALED")
         
         mockMvc.perform(
-                request(HttpMethod.PUT, "/games/${UUID.randomUUID()}/cells/state")
+                request(HttpMethod.PATCH, "/games/${UUID.randomUUID()}/cells")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
         )
@@ -163,7 +163,7 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc,
         `when`(gameService.updateCellState(gameId, request)).thenThrow(ResourceNotFoundException("Failed to find resource."))
 
         mockMvc.perform(
-                request(HttpMethod.PUT, "/games/${gameId}/cells/state")
+                request(HttpMethod.PATCH, "/games/${gameId}/cells")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
         )
