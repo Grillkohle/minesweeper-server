@@ -31,6 +31,7 @@ class GameMapperTest {
                 assertEquals(cellEntity.horizontalIndex, cellResponse.horizontalIndex)
                 assertEquals(cellEntity.verticalIndex, cellResponse.verticalIndex)
                 assertEquals(cellEntity.state.toString(), cellResponse.state.toString())
+                assertNull(cellResponse.numberOfAdjacentMines)
                 assertNull(cellResponse.isMine)
             }
         }
@@ -54,6 +55,25 @@ class GameMapperTest {
     }
 
     @Test
+    fun `test map cell to cell response, not a mine, revealed, should show number of adjacent mines`(){
+        val cellEntity = CellEntity(
+            horizontalIndex = 0,
+            verticalIndex = 0,
+            isMine = false,
+            state = CellEntity.CellEntityState.REVEALED,
+            numberOfAdjacentMines = 10
+        )
+
+        val cellResponse = gameMapper.toCellResponse(cellEntity)
+
+        assertEquals(cellEntity.horizontalIndex, cellResponse.horizontalIndex)
+        assertEquals(cellEntity.verticalIndex, cellResponse.verticalIndex)
+        assertEquals(cellEntity.state.toString(), cellResponse.state.toString())
+        assertEquals(cellEntity.isMine, cellResponse.isMine)
+        assertEquals(cellEntity.numberOfAdjacentMines, cellResponse.numberOfAdjacentMines)
+    }
+
+    @Test
     fun `test map cell to cell response, mine but revealed`() {
         val cellEntity = CellEntity(
                 horizontalIndex = 0,
@@ -68,5 +88,6 @@ class GameMapperTest {
         assertEquals(cellEntity.verticalIndex, cellResponse.verticalIndex)
         assertEquals(cellEntity.state.toString(), cellResponse.state.toString())
         assertEquals(cellEntity.isMine, cellResponse.isMine)
+        assertEquals(cellEntity.numberOfAdjacentMines, cellResponse.numberOfAdjacentMines)
     }
 }

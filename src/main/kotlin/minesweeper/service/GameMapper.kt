@@ -59,7 +59,8 @@ class GameMapper {
             horizontalIndex = cellEntity.horizontalIndex,
             verticalIndex = cellEntity.verticalIndex,
             state = state,
-            isMine = if (state == CellResponseState.REVEALED) cellEntity.isMine else null
+            isMine = if (state == CellResponseState.REVEALED) cellEntity.isMine else null,
+            numberOfAdjacentMines = if (state == CellResponseState.REVEALED) cellEntity.numberOfAdjacentMines else null
         )
     }
 }
