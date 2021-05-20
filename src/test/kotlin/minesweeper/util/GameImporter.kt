@@ -27,25 +27,32 @@ class GameImporter {
                         column = mutableListOf()
                         cells.add(column)
                     }
-                    column.add(CellEntity(horizontalIndex = columnIndex,
+                    column.add(
+                        CellEntity(
+                            horizontalIndex = columnIndex,
                             verticalIndex = rowIndex,
-                            numberOfAdjacentMines = if (cellValue == MINE_VALUE) 0 else Character.getNumericValue(cellValue),
+                            numberOfAdjacentMines = if (cellValue == MINE_VALUE) 0 else Character.getNumericValue(
+                                cellValue
+                            ),
                             isMine = cellValue == MINE_VALUE,
-                            state = CellEntity.CellEntityState.CONCEALED))
+                            state = CellEntity.CellEntityState.CONCEALED
+                        )
+                    )
                 }
             }
 
             val boardEntity = BoardEntity(
-                    horizontalSize = cells.size,
-                    verticalSize = verticalSize,
-                    numberOfMines = cells.map { column -> column.filter { cell -> cell.isMine }.map { 1 }.sum() }.sum(),
-                    cells = cells
+                horizontalSize = cells.size,
+                verticalSize = verticalSize,
+                numberOfMines = cells.map { column -> column.filter { cell -> cell.isMine }.map { 1 }.sum() }.sum(),
+                cells = cells
             )
 
             return GameEntity(
-                    id = UUID.randomUUID(),
-                    state = GameEntityState.IN_PROGRESS,
-                    board = boardEntity)
+                id = UUID.randomUUID(),
+                state = GameEntityState.IN_PROGRESS,
+                board = boardEntity
+            )
         }
     }
 }
