@@ -15,11 +15,13 @@ import java.lang.RuntimeException
 class GameMapper {
     companion object {
         private val enumTranslations = mapOf(
-                CellEntityState.CONCEALED to CellResponseState.CONCEALED
+                CellEntityState.CONCEALED to CellResponseState.CONCEALED,
+                CellEntityState.REVEALED to CellResponseState.REVEALED
         )
 
         fun resolveCellResponseState(state: CellEntityState): CellResponseState{
-            return enumTranslations[state] ?: throw RuntimeException("Incomplete status mapping!")
+            return enumTranslations[state] 
+                    ?: throw RuntimeException("Incomplete status mapping!")
         }
     }
     fun toGameResponse(gameEntity: GameEntity): GameResponse {
@@ -38,11 +40,12 @@ class GameMapper {
         )
     }
 
-    private fun toCellResponse(cellEntity: CellEntity): CellResponse {
+    fun toCellResponse(cellEntity: CellEntity): CellResponse {
+        val state = resolveCellResponseState(cellEntity.state)
         return CellResponse(
                 horizontalIndex = cellEntity.horizontalIndex,
                 verticalIndex = cellEntity.verticalIndex,
-                state = resolveCellResponseState(cellEntity.state)
-        )
+                state = state,
+                isMine = if (state == CellResponseState.REVEALED) cellEntity.isMine else null )
     }
 }

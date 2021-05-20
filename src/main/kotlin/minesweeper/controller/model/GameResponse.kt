@@ -7,7 +7,7 @@ data class GameResponse(
         val board: BoardResponse
 )
 
-enum class GameStateResponse {
+enum class GameResponseState {
     IN_PROGRESS,
     LOSS
 }

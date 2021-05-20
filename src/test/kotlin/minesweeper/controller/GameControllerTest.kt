@@ -5,7 +5,7 @@ import minesweeper.controller.model.CellResponse
 import minesweeper.controller.model.CellResponseState
 import minesweeper.controller.model.CellStateTransitionRequest
 import minesweeper.controller.model.CellStateTransitionResponse
-import minesweeper.controller.model.GameStateResponse
+import minesweeper.controller.model.GameResponseState
 import minesweeper.service.GameService
 import minesweeper.service.exception.ResourceNotFoundException
 import minesweeper.util.GameGenerator
@@ -89,7 +89,7 @@ class GameControllerTest(@Autowired val mockMvc: MockMvc,
         )
 
         val response = CellStateTransitionResponse(
-                gameState = GameStateResponse.IN_PROGRESS,
+                gameState = GameResponseState.IN_PROGRESS,
                 changedCells = listOf(
                         CellResponse(
                                 horizontalIndex = 0,

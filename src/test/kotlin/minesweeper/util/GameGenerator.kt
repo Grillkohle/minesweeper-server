@@ -30,10 +30,10 @@ class GameGenerator {
             var placedNumberOfMines = 0
             val board = mutableListOf<List<CellEntity>>()
 
-            for (columnIndex in 0..horizontalSize) {
+            for (columnIndex in 0 until horizontalSize) {
                 val column = mutableListOf<CellEntity>()
 
-                for (rowIndex in 0..verticalSize) {
+                for (rowIndex in 0 until verticalSize) {
                     if (placedNumberOfMines < numberOfMines && Random.nextBoolean()) {
                         column.add(rowIndex, CellEntity(columnIndex, rowIndex, true))
                         placedNumberOfMines++
