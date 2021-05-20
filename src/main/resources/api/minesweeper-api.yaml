@@ -35,6 +35,12 @@ paths:
             application/json:
               schema:
                 $ref: 'https://opensource.zalando.com/problem/schema.yaml#/Problem'
+        "422":
+          description: The board could not be updated because the game is already lost.
+          content: 
+            application/json:
+              schema:
+                $ref: 'https://opensource.zalando.com/problem/schema.yaml#/Problem'
 
   /games/{game_id}/cells:
     patch: 
