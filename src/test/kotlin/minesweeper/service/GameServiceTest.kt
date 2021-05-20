@@ -47,7 +47,7 @@ class GameServiceTest {
 
         assertNotNull(gameService.createGame(10, 10))
 
-        verify() { gameFactory.createGame(10, 10) }
+        verify { gameFactory.createGame(10, 10) }
         verify { gameRepository.saveGame(gameEntity) }
         verify { gameMapper.toGameResponse(gameEntity) }
     }
