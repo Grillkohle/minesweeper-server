@@ -56,7 +56,7 @@ class GameService(
             )
 
         if (cell.isMine) {
-            gameEntity.state = GameEntityState.LOST
+            gameEntity.state = GameEntityState.LOSS
             cell.state = CellEntity.CellEntityState.REVEALED
             return CellStateTransitionResponse(
                 gameState = GameResponseState.LOSS,

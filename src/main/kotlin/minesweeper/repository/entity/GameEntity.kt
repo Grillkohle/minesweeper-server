@@ -9,5 +9,5 @@ data class GameEntity(val id: UUID = UUID.randomUUID(),
 
 enum class GameEntityState {
     IN_PROGRESS,
-    LOST
+    LOSS
 }

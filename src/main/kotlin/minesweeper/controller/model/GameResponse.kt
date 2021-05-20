@@ -4,7 +4,8 @@ import java.util.UUID
 
 data class GameResponse(
         val id: UUID,
-        val board: BoardResponse
+        val board: BoardResponse,
+        val state: GameResponseState = GameResponseState.IN_PROGRESS
 )
 
 enum class GameResponseState {

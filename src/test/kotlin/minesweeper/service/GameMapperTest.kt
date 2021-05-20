@@ -16,6 +16,7 @@ class GameMapperTest {
         val gameResponse = gameMapper.toGameResponse(gameEntity)
 
         assertEquals(gameEntity.id, gameResponse.id)
+        assertEquals(gameEntity.state.toString(), gameResponse.state.toString())
 
         val boardResponse = gameResponse.board
 
