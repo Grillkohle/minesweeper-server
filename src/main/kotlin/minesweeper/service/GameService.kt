@@ -72,7 +72,7 @@ class GameService(
             )
         }
         val visitedCells = mutableSetOf<Pair<Int, Int>>()
-        visitNeighbor(Pair(cell.horizontalIndex, cell.verticalIndex), gameEntity, visitedCells)
+        revealCellAndNeighbors(Pair(cell.horizontalIndex, cell.verticalIndex), gameEntity, visitedCells)
 
         return CellStateTransitionResponse(
             gameState = GameResponseState.IN_PROGRESS,
@@ -82,7 +82,7 @@ class GameService(
         )
     }
 
-    private fun visitNeighbor(
+    private fun revealCellAndNeighbors(
         coordinates: Pair<Int, Int>,
         gameEntity: GameEntity,
         visitedCells: MutableSet<Pair<Int, Int>>
@@ -98,10 +98,10 @@ class GameService(
             return
 
         CellEntity.getNeighborCoordinates(
-            coordinates = Pair(cell.horizontalIndex, cell.verticalIndex),
+            coordinates = coordinates,
             maxCoordinates = Pair(gameEntity.board.horizontalSize - 1, gameEntity.board.verticalSize - 1)
         )
             .filterNot { (x, y) -> gameEntity.board.cells[x][y].isMine }
-            .forEach { neighbor -> visitNeighbor(neighbor, gameEntity, visitedCells) }
+            .forEach { neighbor -> revealCellAndNeighbors(neighbor, gameEntity, visitedCells) }
     }
 }
