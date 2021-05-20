@@ -12,6 +12,8 @@ import minesweeper.controller.model.GameResponseState
 import minesweeper.repository.GameRepository
 import minesweeper.repository.entity.CellEntity
 import minesweeper.repository.entity.GameEntity
+import minesweeper.repository.entity.GameEntityState
+import minesweeper.service.exception.GameNotModifiableException
 import minesweeper.service.exception.ResourceNotFoundException
 import minesweeper.util.GameGenerator
 import minesweeper.util.GameImporter
@@ -165,6 +167,16 @@ class GameServiceTest {
         assertEquals(0, response.changedCells.size)
 
         verify { gameRepository.findGame(gameEntity.id) }
+    }
+    
+    @Test
+    fun `test cell state transition not possible game already lost`(){
+        val gameEntity = GameGenerator.generateGameEntity()
+        gameEntity.state = GameEntityState.LOSS
+        
+        every { gameRepository.findGame(gameEntity.id) } returns gameEntity
+        
+        assertThrows<GameNotModifiableException> { gameService.updateCellState(gameEntity.id, CellStateTransitionRequest(0, 0, CellResponseState.REVEALED)) }
     }
 
     private fun findCellWith(gameEntity: GameEntity, isMine: Boolean): CellEntity {
