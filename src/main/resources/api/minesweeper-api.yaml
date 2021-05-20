@@ -149,6 +149,7 @@ components:
       x-extensible-enum:
         - CONCEALED
         - REVEALED
+        - FLAGGED
 
     cellStateTransitionRequest:
       type: object
