@@ -15,29 +15,32 @@ import java.util.UUID
 
 @Service
 class GameService(
-        private val gameFactory: GameFactory,
-        private val gameMapper: GameMapper,
-        private val gameRepository: GameRepository,
+    private val gameFactory: GameFactory,
+    private val gameMapper: GameMapper,
+    private val gameRepository: GameRepository,
 ) {
-    fun createGame(horizontalSize: Int,
-                   verticalSize: Int): GameResponse {
-        val gameEntity = gameFactory.createGame(horizontalSize, verticalSize)
-        gameRepository.saveGame(gameEntity)
-
-        return gameMapper.toGameResponse(gameEntity)
+    fun createGame(
+        horizontalSize: Int,
+        verticalSize: Int
+    ): GameResponse {
+        return gameFactory.createGame(horizontalSize, verticalSize)
+            .also { gameRepository.saveGame(it) }
+            .let { gameMapper.toGameResponse(it) }
     }
 
-    fun updateCellState(gameId: UUID,
-                        transitionRequest: CellStateTransitionRequest): CellStateTransitionResponse {
+    fun updateCellState(
+        gameId: UUID,
+        transitionRequest: CellStateTransitionRequest
+    ): CellStateTransitionResponse {
         val game = gameRepository.findGame(gameId)
-                ?: throw ResourceNotFoundException("Game with ID $gameId does not exist!")
+            ?: throw ResourceNotFoundException("Game with ID $gameId does not exist!")
 
         val horizontalIndex = transitionRequest.horizontalIndex!!
         val verticalIndex = transitionRequest.verticalIndex!!
         val cell = game.board.cells
-                .getOrNull(horizontalIndex)
-                ?.getOrNull(verticalIndex)
-                ?: throw ResourceNotFoundException("Cell with coordinates $horizontalIndex, $verticalIndex does not exist!")
+            .getOrNull(horizontalIndex)
+            ?.getOrNull(verticalIndex)
+            ?: throw ResourceNotFoundException("Cell with coordinates $horizontalIndex, $verticalIndex does not exist!")
 
         return when (transitionRequest.state) {
             CellResponseState.REVEALED -> revealCell(game, cell)
@@ -48,40 +51,42 @@ class GameService(
     private fun revealCell(gameEntity: GameEntity, cell: CellEntity): CellStateTransitionResponse {
         if (cell.state == CellEntity.CellEntityState.REVEALED)
             return CellStateTransitionResponse(
-                    gameState = GameResponseState.IN_PROGRESS,
-                    changedCells = listOf()
+                gameState = GameResponseState.IN_PROGRESS,
+                changedCells = listOf()
             )
 
         if (cell.isMine) {
             gameEntity.state = GameEntityState.LOST
             cell.state = CellEntity.CellEntityState.REVEALED
             return CellStateTransitionResponse(
-                    gameState = GameResponseState.LOSS,
-                    changedCells = listOf(gameMapper.toCellResponse(cell))
+                gameState = GameResponseState.LOSS,
+                changedCells = listOf(gameMapper.toCellResponse(cell))
             )
         }
 
         if (cell.numberOfAdjacentMines > 0) {
             cell.state = CellEntity.CellEntityState.REVEALED
             return CellStateTransitionResponse(
-                    gameState = GameResponseState.IN_PROGRESS,
-                    changedCells = listOf(gameMapper.toCellResponse(cell))
+                gameState = GameResponseState.IN_PROGRESS,
+                changedCells = listOf(gameMapper.toCellResponse(cell))
             )
         }
         val visitedCells = mutableSetOf<Pair<Int, Int>>()
         visitNeighbor(Pair(cell.horizontalIndex, cell.verticalIndex), gameEntity, visitedCells)
 
         return CellStateTransitionResponse(
-                gameState = GameResponseState.IN_PROGRESS,
-                changedCells = visitedCells
-                        .map { (x, y) -> gameEntity.board.cells[x][y] }
-                        .map { gameMapper.toCellResponse(it) }
+            gameState = GameResponseState.IN_PROGRESS,
+            changedCells = visitedCells
+                .map { (x, y) -> gameEntity.board.cells[x][y] }
+                .map { gameMapper.toCellResponse(it) }
         )
     }
 
-    private fun visitNeighbor(coordinates: Pair<Int, Int>,
-                              gameEntity: GameEntity,
-                              visitedCells: MutableSet<Pair<Int, Int>>) {
+    private fun visitNeighbor(
+        coordinates: Pair<Int, Int>,
+        gameEntity: GameEntity,
+        visitedCells: MutableSet<Pair<Int, Int>>
+    ) {
         if (visitedCells.contains(coordinates))
             return
 
@@ -93,9 +98,10 @@ class GameService(
             return
 
         CellEntity.getNeighborCoordinates(
-                coordinates = Pair(cell.horizontalIndex, cell.verticalIndex),
-                maxCoordinates = Pair(gameEntity.board.horizontalSize - 1, gameEntity.board.verticalSize - 1))
-                .filterNot { (x, y) -> gameEntity.board.cells[x][y].isMine }
-                .forEach { neighbor -> visitNeighbor(neighbor, gameEntity, visitedCells) }
+            coordinates = Pair(cell.horizontalIndex, cell.verticalIndex),
+            maxCoordinates = Pair(gameEntity.board.horizontalSize - 1, gameEntity.board.verticalSize - 1)
+        )
+            .filterNot { (x, y) -> gameEntity.board.cells[x][y].isMine }
+            .forEach { neighbor -> visitNeighbor(neighbor, gameEntity, visitedCells) }
     }
 }
