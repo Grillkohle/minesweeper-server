@@ -9,6 +9,7 @@ import minesweeper.repository.GameRepository
 import minesweeper.repository.entity.CellEntity
 import minesweeper.repository.entity.GameEntity
 import minesweeper.repository.entity.GameEntityState
+import minesweeper.service.exception.GameNotModifiableException
 import minesweeper.service.exception.ResourceNotFoundException
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -34,6 +35,9 @@ class GameService(
     ): CellStateTransitionResponse {
         val game = gameRepository.findGame(gameId)
             ?: throw ResourceNotFoundException("Game with ID $gameId does not exist!")
+
+        if (game.state != GameEntityState.IN_PROGRESS)
+            throw GameNotModifiableException("Game ${game.id} can not be modified, it is already in ${game.state} state.")
 
         val horizontalIndex = transitionRequest.horizontalIndex!!
         val verticalIndex = transitionRequest.verticalIndex!!
