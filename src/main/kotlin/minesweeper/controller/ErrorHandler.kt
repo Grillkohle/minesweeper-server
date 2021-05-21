@@ -1,6 +1,7 @@
 package minesweeper.controller
 
 import minesweeper.controller.model.Problem
+import minesweeper.service.exception.CellNotModifiableException
 import minesweeper.service.exception.GameNotModifiableException
 import minesweeper.service.exception.ResourceNotFoundException
 import mu.KotlinLogging
@@ -77,13 +78,14 @@ class ErrorHandler {
             )
     }
 
-    @ExceptionHandler(GameNotModifiableException::class)
-    fun handleGameNotModifiableException(exception: GameNotModifiableException): ResponseEntity<Problem> {
+    @ExceptionHandler(value = [GameNotModifiableException::class, CellNotModifiableException::class])
+    fun handleGameNotModifiableException(exception: RuntimeException): ResponseEntity<Problem> {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY.value())
             .body(
                 Problem(
                     title = "Unprocessable entity",
-                    detail = exception.message ?: "Game is not modifiable as it is already won or lost.",
+                    detail = exception.message
+                        ?: "Game/Cell is not modifiable: the requested modification is forbidden.",
                     status = HttpStatus.UNPROCESSABLE_ENTITY.value()
                 )
             )

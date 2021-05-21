@@ -7,6 +7,7 @@ import minesweeper.controller.model.CellStateTransitionRequest
 import minesweeper.controller.model.CellStateTransitionResponse
 import minesweeper.controller.model.GameResponseState
 import minesweeper.service.GameService
+import minesweeper.service.exception.CellNotModifiableException
 import minesweeper.service.exception.GameNotModifiableException
 import minesweeper.service.exception.ResourceNotFoundException
 import minesweeper.util.GameGenerator
@@ -197,6 +198,31 @@ class GameControllerTest(
                 request
             )
         ).thenThrow(GameNotModifiableException("Game is already lost!"))
+
+        mockMvc.perform(
+            request(HttpMethod.PATCH, "/games/${gameId}/cells")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+            .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity)
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+    }
+
+    @Test
+    fun `change cell state cell to flagged already revealed expect 422`() {
+        val gameId = UUID.randomUUID()
+        val request = CellStateTransitionRequest(
+            horizontalIndex = 0,
+            verticalIndex = 0,
+            state = CellResponseState.FLAGGED
+        )
+
+        `when`(
+            gameService.updateCellState(
+                gameId,
+                request
+            )
+        ).thenThrow(CellNotModifiableException("Cell is already revealed!"))
 
         mockMvc.perform(
             request(HttpMethod.PATCH, "/games/${gameId}/cells")

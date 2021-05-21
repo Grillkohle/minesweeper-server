@@ -36,7 +36,7 @@ paths:
               schema:
                 $ref: 'https://opensource.zalando.com/problem/schema.yaml#/Problem'
         "422":
-          description: The board could not be updated because the game is already lost.
+          description: The board was not updated because the requested cell state transition is forbidden.
           content: 
             application/json:
               schema:
