@@ -17,7 +17,8 @@ class GameMapper {
     companion object {
         private val cellStateTranslations = mapOf(
             CellEntityState.CONCEALED to CellResponseState.CONCEALED,
-            CellEntityState.REVEALED to CellResponseState.REVEALED
+            CellEntityState.REVEALED to CellResponseState.REVEALED,
+            CellEntityState.FLAGGED to CellResponseState.FLAGGED
         )
 
         private val gameStateTranslations = mapOf(
