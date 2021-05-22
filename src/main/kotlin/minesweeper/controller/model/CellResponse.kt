@@ -9,5 +9,6 @@ data class CellResponse(val horizontalIndex: Int,
 
 enum class CellResponseState {
     CONCEALED,
-    REVEALED
+    REVEALED,
+    FLAGGED
 }

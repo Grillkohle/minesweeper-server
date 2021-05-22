@@ -23,6 +23,7 @@ class CellEntity(val horizontalIndex: Int,
 
     enum class CellEntityState{
         CONCEALED,
-        REVEALED
+        REVEALED,
+        FLAGGED
     }
 }

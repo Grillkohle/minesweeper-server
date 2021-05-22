@@ -9,6 +9,7 @@ import minesweeper.repository.GameRepository
 import minesweeper.repository.entity.CellEntity
 import minesweeper.repository.entity.GameEntity
 import minesweeper.repository.entity.GameEntityState
+import minesweeper.service.exception.CellNotModifiableException
 import minesweeper.service.exception.GameNotModifiableException
 import minesweeper.service.exception.ResourceNotFoundException
 import org.springframework.stereotype.Service
@@ -48,42 +49,58 @@ class GameService(
 
         return when (transitionRequest.state) {
             CellResponseState.REVEALED -> revealCell(game, cell)
-            else -> TODO()
+            CellResponseState.FLAGGED -> flagCell(game, cell)
+            CellResponseState.CONCEALED -> concealCell(game, cell)
         }
     }
 
-    private fun revealCell(gameEntity: GameEntity, cell: CellEntity): CellStateTransitionResponse {
-        if (cell.state == CellEntity.CellEntityState.REVEALED)
-            return CellStateTransitionResponse(
+    private fun revealCell(
+        gameEntity: GameEntity, cellEntity
+        : CellEntity
+    ): CellStateTransitionResponse {
+        return when (cellEntity.state) {
+            CellEntity.CellEntityState.REVEALED -> CellStateTransitionResponse(
                 gameState = GameResponseState.IN_PROGRESS,
                 changedCells = listOf()
             )
 
-        if (cell.isMine) {
-            gameEntity.state = GameEntityState.LOSS
-            cell.state = CellEntity.CellEntityState.REVEALED
-            return CellStateTransitionResponse(
-                gameState = GameResponseState.LOSS,
-                changedCells = listOf(gameMapper.toCellResponse(cell))
+            CellEntity.CellEntityState.FLAGGED -> throw CellNotModifiableException(
+                "Failed to reveal cell of game ${gameEntity.id} at (${cellEntity.horizontalIndex}, ${cellEntity.verticalIndex}):" +
+                        " Can not reveal cells which are flagged."
             )
-        }
 
-        if (cell.numberOfAdjacentMines > 0) {
-            cell.state = CellEntity.CellEntityState.REVEALED
-            return CellStateTransitionResponse(
-                gameState = GameResponseState.IN_PROGRESS,
-                changedCells = listOf(gameMapper.toCellResponse(cell))
-            )
-        }
-        val visitedCells = mutableSetOf<Pair<Int, Int>>()
-        revealCellAndNeighbors(Pair(cell.horizontalIndex, cell.verticalIndex), gameEntity, visitedCells)
+            CellEntity.CellEntityState.CONCEALED -> {
+                if (cellEntity.isMine) {
+                    gameEntity.state = GameEntityState.LOSS
+                    cellEntity.state = CellEntity.CellEntityState.REVEALED
+                    return CellStateTransitionResponse(
+                        gameState = GameResponseState.LOSS,
+                        changedCells = listOf(gameMapper.toCellResponse(cellEntity))
+                    )
+                }
 
-        return CellStateTransitionResponse(
-            gameState = GameResponseState.IN_PROGRESS,
-            changedCells = visitedCells
-                .map { (x, y) -> gameEntity.board.cells[x][y] }
-                .map { gameMapper.toCellResponse(it) }
-        )
+                if (cellEntity.numberOfAdjacentMines > 0) {
+                    cellEntity.state = CellEntity.CellEntityState.REVEALED
+                    return CellStateTransitionResponse(
+                        gameState = GameResponseState.IN_PROGRESS,
+                        changedCells = listOf(gameMapper.toCellResponse(cellEntity))
+                    )
+                }
+                val visitedCells = mutableSetOf<Pair<Int, Int>>()
+                revealCellAndNeighbors(
+                    Pair(cellEntity.horizontalIndex, cellEntity.verticalIndex),
+                    gameEntity,
+                    visitedCells
+                )
+
+                CellStateTransitionResponse(
+                    gameState = GameResponseState.IN_PROGRESS,
+                    changedCells = visitedCells
+                        .map { (x, y) -> gameEntity.board.cells[x][y] }
+                        .map { gameMapper.toCellResponse(it) }
+                )
+            }
+        }
     }
 
     private fun revealCellAndNeighbors(
@@ -107,5 +124,49 @@ class GameService(
         )
             .filterNot { (x, y) -> gameEntity.board.cells[x][y].isMine }
             .forEach { neighbor -> revealCellAndNeighbors(neighbor, gameEntity, visitedCells) }
+    }
+
+    private fun flagCell(gameEntity: GameEntity, cellEntity: CellEntity): CellStateTransitionResponse {
+        return when (cellEntity.state) {
+            CellEntity.CellEntityState.REVEALED -> throw CellNotModifiableException(
+                "Failed to flag cell of game ${gameEntity.id} at (${cellEntity.horizontalIndex}, ${cellEntity.verticalIndex}):" +
+                        " Can not flag cells which are already revealed."
+            )
+
+            CellEntity.CellEntityState.CONCEALED -> {
+                cellEntity.state = CellEntity.CellEntityState.FLAGGED
+                CellStateTransitionResponse(
+                    gameState = GameResponseState.IN_PROGRESS,
+                    changedCells = listOf(gameMapper.toCellResponse(cellEntity))
+                )
+            }
+
+            CellEntity.CellEntityState.FLAGGED -> CellStateTransitionResponse(
+                gameState = GameResponseState.IN_PROGRESS,
+                changedCells = listOf()
+            )
+        }
+    }
+
+    private fun concealCell(gameEntity: GameEntity, cellEntity: CellEntity): CellStateTransitionResponse {
+        return when (cellEntity.state) {
+            CellEntity.CellEntityState.REVEALED -> throw CellNotModifiableException(
+                "Failed to conceal cell of game ${gameEntity.id} at (${cellEntity.horizontalIndex}, ${cellEntity.verticalIndex}):" +
+                        " Can not conceal cells which are already revealed."
+            )
+
+            CellEntity.CellEntityState.CONCEALED -> CellStateTransitionResponse(
+                gameState = GameResponseState.IN_PROGRESS,
+                changedCells = listOf()
+            )
+
+            CellEntity.CellEntityState.FLAGGED -> {
+                cellEntity.state = CellEntity.CellEntityState.CONCEALED
+                CellStateTransitionResponse(
+                    gameState = GameResponseState.IN_PROGRESS,
+                    changedCells = listOf(gameMapper.toCellResponse(cellEntity))
+                )
+            }
+        }
     }
 }
