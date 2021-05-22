@@ -1,3 +1,14 @@
+logbook:
+  format:
+    style: splunk
+
+logging:
+  pattern:
+    # changes from default only in '[%22X{X-Flow-ID}]' added after thread name
+    console: '%clr(%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) %clr(${PID: }){magenta} %clr(---){faint} %clr([%15.15t] [%22X{X-Flow-ID}]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}'
+  level:
+    org.zalando.logbook: TRACE
+
 spring:
   jackson:
     default-property-inclusion: non_null
