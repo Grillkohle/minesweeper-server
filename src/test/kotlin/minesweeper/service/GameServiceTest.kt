@@ -207,6 +207,9 @@ class GameServiceTest {
 
         assertEquals(GameResponseState.IN_PROGRESS, response.gameState)
         assertEquals(0, response.changedCells.size)
+
+        verify { gameRepository.findGame(gameEntity.id) }
+        verify(exactly = 0) { gameMapper.toCellResponse(any()) }
     }
 
     @Test
@@ -242,6 +245,47 @@ class GameServiceTest {
                 gameEntity.board.cells[it.horizontalIndex][it.verticalIndex].state
             )
         }
+
+        verify { gameRepository.findGame(gameEntity.id) }
+        verify(exactly = expectedChangedCellIndices.size) { gameMapper.toCellResponse(any()) }
+    }
+
+    @Test
+    fun `test cell state transition reveal already revealed cell fully & incorrectly flagged neighbors yield result`() {
+        val gameEntity = GameImporter.createGameFromFile("src/test/resources/test_boards/3x3_with_zero_adj_cells")
+        gameEntity.board.cells[1][0].state = CellEntity.CellEntityState.REVEALED
+        gameEntity.board.cells[0][0].state = CellEntity.CellEntityState.FLAGGED
+        gameEntity.board.cells[0][1].state = CellEntity.CellEntityState.FLAGGED
+
+        every { gameRepository.findGame(gameEntity.id) } returns gameEntity
+        val expectedChangedCellIndices = listOf(0 to 2, 1 to 1, 1 to 2, 2 to 0, 2 to 1)
+        expectedChangedCellIndices.forEach { (x, y) ->
+            every { gameMapper.toCellResponse(gameEntity.board.cells[x][y]) } returns
+                    CellResponse(
+                        horizontalIndex = x,
+                        verticalIndex = y,
+                        isMine = gameEntity.board.cells[x][y].isMine,
+                        state = CellResponseState.REVEALED
+                    )
+        }
+
+        val response = gameService.updateCellState(
+            gameEntity.id,
+            CellStateTransitionRequest(1, 0, CellResponseState.REVEALED)
+        )
+
+        assertEquals(GameResponseState.LOSS, response.gameState)
+        assertEquals(expectedChangedCellIndices.size, response.changedCells.size)
+
+        response.changedCells.forEach {
+            assertEquals(
+                CellEntity.CellEntityState.REVEALED,
+                gameEntity.board.cells[it.horizontalIndex][it.verticalIndex].state
+            )
+        }
+
+        verify { gameRepository.findGame(gameEntity.id) }
+        verify(exactly = expectedChangedCellIndices.size) { gameMapper.toCellResponse(any()) }
     }
 
     @Test
