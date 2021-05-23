@@ -20,7 +20,7 @@ class CellEntity(
 
             return neighborCoordinateOffsets
                 .map { (xOffset, yOffset) -> x + xOffset to y + yOffset } // generate indices of all possible neighboring fields
-                .filter { (x, y) -> x >= 0 || x <= maxX || y >= 0 || y <= maxY } // filter those out which are not on the board
+                .filter { (x, y) -> x in 0..maxX && y in 0..maxY } // filter those out which are not on the board
                 .toSet()
         }
     }
