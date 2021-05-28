@@ -55,8 +55,8 @@ class GameService(
     }
 
     private fun revealCell(
-        gameEntity: GameEntity, cellEntity
-        : CellEntity
+        gameEntity: GameEntity,
+        cellEntity: CellEntity
     ): CellStateTransitionResponse {
         return when (cellEntity.state) {
             CellEntity.CellEntityState.REVEALED -> CellStateTransitionResponse(
@@ -86,9 +86,9 @@ class GameService(
                         changedCells = listOf(gameMapper.toCellResponse(cellEntity))
                     )
                 }
-                val visitedCells = mutableSetOf<Pair<Int, Int>>()
+                val visitedCells = mutableSetOf<CellEntity>()
                 revealCellAndNeighbors(
-                    Pair(cellEntity.horizontalIndex, cellEntity.verticalIndex),
+                    cellEntity,
                     gameEntity,
                     visitedCells
                 )
@@ -96,7 +96,6 @@ class GameService(
                 CellStateTransitionResponse(
                     gameState = GameResponseState.IN_PROGRESS,
                     changedCells = visitedCells
-                        .map { (x, y) -> gameEntity.board.cells[x][y] }
                         .map { gameMapper.toCellResponse(it) }
                 )
             }
@@ -104,25 +103,20 @@ class GameService(
     }
 
     private fun revealCellAndNeighbors(
-        coordinates: Pair<Int, Int>,
+        cellEntity: CellEntity,
         gameEntity: GameEntity,
-        visitedCells: MutableSet<Pair<Int, Int>>
+        visitedCells: MutableSet<CellEntity>
     ) {
-        if (visitedCells.contains(coordinates))
+        if (visitedCells.contains(cellEntity))
             return
 
-        visitedCells += coordinates
-        val cell = gameEntity.board.cells[coordinates.first][coordinates.second]
-        cell.state = CellEntity.CellEntityState.REVEALED
+        visitedCells += cellEntity
+        cellEntity.state = CellEntity.CellEntityState.REVEALED
 
-        if (cell.numberOfAdjacentMines > 0)
+        if (cellEntity.numberOfAdjacentMines > 0)
             return
 
-        CellEntity.getNeighborCoordinates(
-            coordinates = coordinates,
-            maxCoordinates = Pair(gameEntity.board.horizontalSize - 1, gameEntity.board.verticalSize - 1)
-        )
-            .filterNot { (x, y) -> gameEntity.board.cells[x][y].isMine }
+        CellEntity.getNeighbors(cellEntity, gameEntity.board)
             .forEach { neighbor -> revealCellAndNeighbors(neighbor, gameEntity, visitedCells) }
     }
 
