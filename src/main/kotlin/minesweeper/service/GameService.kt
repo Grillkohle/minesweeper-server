@@ -55,8 +55,8 @@ class GameService(
     }
 
     private fun revealCell(
-        gameEntity: GameEntity, cellEntity
-        : CellEntity
+        gameEntity: GameEntity,
+        cellEntity: CellEntity
     ): CellStateTransitionResponse {
         return when (cellEntity.state) {
             CellEntity.CellEntityState.REVEALED -> CellStateTransitionResponse(
@@ -88,7 +88,7 @@ class GameService(
                 }
                 val visitedCells = mutableSetOf<Pair<Int, Int>>()
                 revealCellAndNeighbors(
-                    Pair(cellEntity.horizontalIndex, cellEntity.verticalIndex),
+                    cellEntity,
                     gameEntity,
                     visitedCells
                 )
@@ -104,25 +104,24 @@ class GameService(
     }
 
     private fun revealCellAndNeighbors(
-        coordinates: Pair<Int, Int>,
+        cellEntity: CellEntity,
         gameEntity: GameEntity,
         visitedCells: MutableSet<Pair<Int, Int>>
     ) {
-        if (visitedCells.contains(coordinates))
+        if (visitedCells.contains(cellEntity.coordinates))
             return
 
-        visitedCells += coordinates
-        val cell = gameEntity.board.cells[coordinates.first][coordinates.second]
-        cell.state = CellEntity.CellEntityState.REVEALED
+        visitedCells += cellEntity.coordinates
+        cellEntity.state = CellEntity.CellEntityState.REVEALED
 
-        if (cell.numberOfAdjacentMines > 0)
+        if (cellEntity.numberOfAdjacentMines > 0)
             return
 
         CellEntity.getNeighborCoordinates(
-            coordinates = coordinates,
+            coordinates = cellEntity.coordinates,
             maxCoordinates = Pair(gameEntity.board.horizontalSize - 1, gameEntity.board.verticalSize - 1)
         )
-            .filterNot { (x, y) -> gameEntity.board.cells[x][y].isMine }
+            .map { (x, y) -> gameEntity.board.cells[x][y] }
             .forEach { neighbor -> revealCellAndNeighbors(neighbor, gameEntity, visitedCells) }
     }
 
