@@ -116,11 +116,7 @@ class GameService(
         if (cellEntity.numberOfAdjacentMines > 0)
             return
 
-        CellEntity.getNeighborCoordinates(
-            coordinates = cellEntity.coordinates,
-            maxCoordinates = gameEntity.board.sizeCoordinates
-        )
-            .map { (x, y) -> gameEntity.board.cells[x][y] }
+        CellEntity.getNeighbors(cellEntity, gameEntity.board)
             .forEach { neighbor -> revealCellAndNeighbors(neighbor, gameEntity, visitedCells) }
     }
 

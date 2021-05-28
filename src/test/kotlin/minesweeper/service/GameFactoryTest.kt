@@ -16,7 +16,10 @@ class GameFactoryTest {
         val gameEntity = gameFactory.createGame(horizontalSize, verticalSize)
 
         assertNotNull(gameEntity.id)
-        assertEquals(Pair(horizontalSize, verticalSize), Pair(gameEntity.board.horizontalSize, gameEntity.board.verticalSize))
+        assertEquals(
+            Pair(horizontalSize, verticalSize),
+            Pair(gameEntity.board.horizontalSize, gameEntity.board.verticalSize)
+        )
         val board = gameEntity.board.cells
 
         for (horizontalIndex in board.indices) {
@@ -36,10 +39,10 @@ class GameFactoryTest {
         val gameEntity = gameFactory.createGame(horizontalSize, verticalSize)
 
         val actualNumberOfMines =
-                gameEntity.board.cells.map { column ->
-                    column.filter { cell -> cell.isMine }
-                            .count()
-                }.sum()
+            gameEntity.board.cells.map { column ->
+                column.filter { cell -> cell.isMine }
+                    .count()
+            }.sum()
 
         assertEquals(expectedMines, actualNumberOfMines)
     }
@@ -55,11 +58,8 @@ class GameFactoryTest {
         cells.forEach { column ->
             column.forEach { cell ->
                 val expectedNeighboringMines =
-                        CellEntity.getNeighborCoordinates(
-                                coordinates = cell.horizontalIndex to cell.verticalIndex,
-                                maxCoordinates = horizontalSize - 1 to verticalSize - 1)
-                                .map { (x, y) -> cells[x][y] }
-                                .count { it.isMine }
+                    CellEntity.getNeighbors(cell, gameEntity.board)
+                        .count { it.isMine }
                 assertEquals(expectedNeighboringMines, cell.numberOfAdjacentMines)
             }
         }

@@ -16,6 +16,12 @@ class CellEntity(
                                                       Pair(-1, 1),  Pair(0, 1),  Pair(1, 1))
         // @formatter:on
 
+        fun getNeighbors(cellEntity: CellEntity, boardEntity: BoardEntity): Set<CellEntity> {
+            return getNeighborCoordinates(cellEntity.coordinates, boardEntity.sizeCoordinates)
+                .map { (x, y) -> boardEntity.cells[x][y] }
+                .toSet()
+        }
+
         fun getNeighborCoordinates(coordinates: Pair<Int, Int>, maxCoordinates: Pair<Int, Int>): Set<Pair<Int, Int>> {
             val (x, y) = coordinates
             val (maxX, maxY) = maxCoordinates
