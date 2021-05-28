@@ -119,7 +119,7 @@ class GameService(
 
         CellEntity.getNeighborCoordinates(
             coordinates = cellEntity.coordinates,
-            maxCoordinates = Pair(gameEntity.board.horizontalSize - 1, gameEntity.board.verticalSize - 1)
+            maxCoordinates = gameEntity.board.sizeCoordinates
         )
             .map { (x, y) -> gameEntity.board.cells[x][y] }
             .forEach { neighbor -> revealCellAndNeighbors(neighbor, gameEntity, visitedCells) }
