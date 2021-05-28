@@ -59,7 +59,7 @@ class GameService(
         cellEntity: CellEntity
     ): CellStateTransitionResponse {
         return when (cellEntity.state) {
-            CellEntity.CellEntityState.REVEALED -> changeGameStateAndBuildTransitionResponse(gameEntity, emptySet())
+            CellEntity.CellEntityState.REVEALED -> revealRevealedCell(gameEntity, cellEntity)
 
             CellEntity.CellEntityState.FLAGGED -> throw CellNotModifiableException(
                 "Failed to reveal cell of game ${gameEntity.id} at (${cellEntity.horizontalIndex}, ${cellEntity.verticalIndex}):" +
@@ -74,8 +74,8 @@ class GameService(
 
                 val visitedCells = mutableSetOf<CellEntity>()
                 revealCellAndNeighbors(
-                    cellEntity,
                     gameEntity,
+                    cellEntity,
                     visitedCells
                 )
 
@@ -84,9 +84,27 @@ class GameService(
         }
     }
 
-    private fun revealCellAndNeighbors(
-        cellEntity: CellEntity,
+    private fun revealRevealedCell(
         gameEntity: GameEntity,
+        cellEntity: CellEntity
+    ): CellStateTransitionResponse {
+        val flaggedNeighborsCount = CellEntity.getNeighbors(cellEntity, gameEntity.board)
+            .count { it.state == CellEntity.CellEntityState.FLAGGED }
+        return if (cellEntity.numberOfAdjacentMines == 0 || cellEntity.numberOfAdjacentMines != flaggedNeighborsCount)
+            changeGameStateAndBuildTransitionResponse(gameEntity, emptySet())
+        else {
+            val visitedCells = mutableSetOf<CellEntity>()
+
+            revealCellAndNeighbors(gameEntity, cellEntity, visitedCells)
+
+            changeGameStateAndBuildTransitionResponse(gameEntity, visitedCells.minus(cellEntity))
+        }
+    }
+
+
+    private fun revealCellAndNeighbors(
+        gameEntity: GameEntity,
+        cellEntity: CellEntity,
         visitedCells: MutableSet<CellEntity>
     ) {
         if (visitedCells.contains(cellEntity))
@@ -95,12 +113,13 @@ class GameService(
         visitedCells += cellEntity
         cellEntity.state = CellEntity.CellEntityState.REVEALED
 
-        if (cellEntity.numberOfAdjacentMines > 0)
+        val neighbors = CellEntity.getNeighbors(cellEntity, gameEntity.board)
+        if (cellEntity.numberOfAdjacentMines > 0 && neighbors.count { it.state == CellEntity.CellEntityState.FLAGGED } != cellEntity.numberOfAdjacentMines)
             return
 
-        CellEntity.getNeighbors(cellEntity, gameEntity.board)
+        neighbors
             .filter { it.state == CellEntity.CellEntityState.CONCEALED }
-            .forEach { neighbor -> revealCellAndNeighbors(neighbor, gameEntity, visitedCells) }
+            .forEach { neighbor -> revealCellAndNeighbors(gameEntity, neighbor, visitedCells) }
     }
 
     private fun flagCell(gameEntity: GameEntity, cellEntity: CellEntity): CellStateTransitionResponse {
