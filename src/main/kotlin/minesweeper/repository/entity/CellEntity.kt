@@ -38,4 +38,8 @@ class CellEntity(
         REVEALED,
         FLAGGED
     }
+
+    override fun toString(): String {
+        return "CellEntity(horizontalIndex=$horizontalIndex, verticalIndex=$verticalIndex, isMine=$isMine, numberOfAdjacentMines=$numberOfAdjacentMines, state=$state)"
+    }
 }
