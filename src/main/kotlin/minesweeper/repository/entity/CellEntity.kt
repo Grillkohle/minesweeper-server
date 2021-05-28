@@ -5,6 +5,8 @@ class CellEntity(val horizontalIndex: Int,
                  val isMine: Boolean = false,
                  val numberOfAdjacentMines: Int = 0,
                  var state: CellEntityState = CellEntityState.CONCEALED) {
+    val coordinates = Pair(horizontalIndex, verticalIndex)
+
     companion object {
         private val neighborCoordinateOffsets = setOf(Pair(-1, -1), Pair(0, -1), Pair(1, -1),
                                                       Pair(-1, 0),               Pair(1, 0),
