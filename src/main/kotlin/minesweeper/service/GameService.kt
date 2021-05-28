@@ -86,7 +86,7 @@ class GameService(
                         changedCells = listOf(gameMapper.toCellResponse(cellEntity))
                     )
                 }
-                val visitedCells = mutableSetOf<Pair<Int, Int>>()
+                val visitedCells = mutableSetOf<CellEntity>()
                 revealCellAndNeighbors(
                     cellEntity,
                     gameEntity,
@@ -96,7 +96,6 @@ class GameService(
                 CellStateTransitionResponse(
                     gameState = GameResponseState.IN_PROGRESS,
                     changedCells = visitedCells
-                        .map { (x, y) -> gameEntity.board.cells[x][y] }
                         .map { gameMapper.toCellResponse(it) }
                 )
             }
@@ -106,12 +105,12 @@ class GameService(
     private fun revealCellAndNeighbors(
         cellEntity: CellEntity,
         gameEntity: GameEntity,
-        visitedCells: MutableSet<Pair<Int, Int>>
+        visitedCells: MutableSet<CellEntity>
     ) {
-        if (visitedCells.contains(cellEntity.coordinates))
+        if (visitedCells.contains(cellEntity))
             return
 
-        visitedCells += cellEntity.coordinates
+        visitedCells += cellEntity
         cellEntity.state = CellEntity.CellEntityState.REVEALED
 
         if (cellEntity.numberOfAdjacentMines > 0)
